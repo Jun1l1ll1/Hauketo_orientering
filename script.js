@@ -33,7 +33,7 @@ function index_loaded() {
         }
     }
     if (code.trim().length == 4) {
-        document.location.href = './enter_group.html';
+        document.location.href = './post.html';
     }
 }
 
@@ -75,6 +75,6 @@ function confirm_postcode() {
 
     if (code.length == 4) {
         cookie_postcode(code.toUpperCase())
-        document.location.href = './enter_group.html';
+        document.location.href = './post.html';
     }
 }
