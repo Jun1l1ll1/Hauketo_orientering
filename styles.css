@@ -1,0 +1,143 @@
+
+:root {
+    --bg_color: #2B2B33;
+    --inp_color: #3E3E49;
+    --cont_color: #1E1E26;
+    --text_color: #FFFFFF;
+    --text_c_obscure: #82828E;
+
+    --check_light: #2FB6A6;
+    --check_dark: #005E6C;
+    --cancel_light: #DC6464;
+    --cancel_dark: #7B0C2C;
+
+}
+
+
+
+
+
+body, html {
+    color-scheme: dark;
+    background-color: var(--bg_color);
+    color: var(--text_color);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1.2rem;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+input, button {
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--inp_color);
+    padding: .5rem;
+}
+button:hover {
+    filter: brightness(1.1)
+}button:active {
+    filter: brightness(1.25)
+}
+
+h1, h2, h3, h4, h5, p {
+    padding: 0px;
+    margin: 0px;
+}
+
+
+
+
+
+.full {
+    width: 100vw;
+    height: 100vh;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.75);
+    > div {
+        background-color: var(--bg_color);
+        width: 80vw;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+    > button {
+        margin-top: 10px;
+        background-color: var(--cancel_light);
+        color: var(--cancel_dark);
+        font-weight: bold;
+    }
+}
+
+#help_overlay {
+    display: none;
+}
+.help_btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-color: var(--cont_color);
+    color: var(--text_c_obscure);
+}
+
+
+
+
+
+.title {
+    margin-bottom: 100px;
+}
+
+
+
+
+.leave_btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0,0,0,0);
+    color: var(--text_c_obscure);
+}
+
+
+
+
+
+.big_inp {
+    font-size: 3rem;
+    width: 12rem;
+    padding: 1rem;
+}
+p:has(~.big_inp) {
+    font-weight: bold;
+    margin-left: 20px;
+    margin-bottom: 7px;
+}
+
+.big_confirm_btn {
+    margin-top: 20px;
+
+    background-color: var(--check_light);
+    color: var(--check_dark);
+    width: 5rem;
+    height: 3rem;
+}

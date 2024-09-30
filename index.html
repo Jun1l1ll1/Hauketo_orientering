@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hauketo orientering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="center full">
+        <div>
+            <p>Postkode</p>
+            <input class="big_inp" type="text" name="code_inp" id="code_inp" placeholder="XXXX" autocomplete="off">
+        </div>
+        <button class="big_confirm_btn" onclick="confirm_postcode()">Done</button>
+    </div>
+
+    <!--START Hjelp knapp og overlay -->
+    <button class="help_btn" onclick="toggle_help()">?</button>
+    <div class="overlay center" id="help_overlay">
+        <div>
+            <p>Postkode er 4-siffret kode utgitt av eventets administratorer.</p>
+            <br/><p>Kontakt en av administratorene ved spørsmål eller rapport av feil.</p>
+        </div>
+        <button onclick="toggle_help()">Tilbake</button>
+    </div>
+    <!--SLUTT Hjelp knapp og overlay -->
+</body>
+<script src="script.js"></script>
+<script> index_loaded(); </script>
+</html>
