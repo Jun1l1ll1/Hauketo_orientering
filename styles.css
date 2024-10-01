@@ -141,3 +141,16 @@ p:has(~.big_inp) {
     width: 5rem;
     height: 3rem;
 }
+
+
+
+
+
+
+.group_header {
+    position: absolute;
+    display: flex;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+}
