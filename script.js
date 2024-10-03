@@ -3,7 +3,7 @@ console.log('%cWebsite by Juni', 'background: #ff7777; font-weight: bold; paddin
 
 
 
-function page_loaded() {
+function get_postcode_cookie() {
     let code = '';
 
     let name = 'postcode=';
@@ -15,31 +15,9 @@ function page_loaded() {
             break;
         }
     }
-    
-    if (code == '') {
-        document.location.href = './';
-    }
+
+    return code.trim()
 }
-function index_loaded() {
-    let code = '';
-
-    let name = 'postcode=';
-    let cookie_list = document.cookie.split(';');
-    for(let i = 0; i < cookie_list.length; i++) {
-        let c = cookie_list[i];
-        if (c.trim().indexOf(name) == 0) {
-            code = c.substring(name.length+1, c.length);
-            break;
-        }
-    }
-    if (code.trim().length == 4) {
-        document.location.href = './post.html';
-    }
-}
-
-
-
-
 
 function cookie_postcode(code) {
     let exdays = 1;
@@ -48,6 +26,42 @@ function cookie_postcode(code) {
     let expires = 'expires='+ d.toUTCString();
     document.cookie = 'postcode=' + code + ';' + expires + ';path=/';
 }
+
+
+
+
+function index_loaded() {
+    let code = get_postcode_cookie()
+    if (code.length == 4) {
+        document.location.href = './post.html';
+    }
+}
+function post_page_loaded() {
+    let code = get_postcode_cookie()
+    if (code == '') {
+        document.location.href = './';
+    }
+}
+function group_page_loaded() {
+    let code = get_postcode_cookie()
+    if (code == '') {
+        document.location.href = './';
+    }
+
+    const url_params = new URLSearchParams(window.location.search);
+
+    document.getElementById("members_cont")//TODO endre til gruppemedlemmer
+    document.getElementById("group_title").innerText = "Gruppe "+url_params.get("nr")
+    document.getElementById("taskverifier_title").innerText//TODO endre til postnummer
+    document.getElementById("comment_title").innerText = `Kommentar til g${url_params.get("nr")} på pXX`//TODO endre postnummer
+    
+}
+
+
+
+
+
+
 
 
 
@@ -64,11 +78,15 @@ function toggle_help() {
 }
 
 
+
 function exit() {
     document.cookie = "postcode=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;";
     document.location.href = './';
 }
 
+function back() {
+    document.location.href = './post.html';
+}
 
 function confirm_postcode() {
     let code = document.getElementById('code_inp').value;
@@ -76,5 +94,13 @@ function confirm_postcode() {
     if (code.length == 4) {
         cookie_postcode(code.toUpperCase())
         document.location.href = './post.html';
+    }
+}
+
+function enter_group() {
+    let groupnr = document.getElementById('group_inp').value;
+
+    if (groupnr.length > 0) {
+        document.location.href = './group.html?nr='+groupnr;
     }
 }

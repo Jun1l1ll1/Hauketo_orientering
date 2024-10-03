@@ -7,29 +7,41 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="center full">
-        <div>
-            <p>Gruppenummer</p>
-            <input class="big_inp" type="text" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off">
+    <div class="group_header">
+        <button class="back_btn" onclick="back()"><</button>
+        <p id="group_title">Gruppe XXX</p>
+    </div>
+    
+    <div class="center_vertical">
+        <div class="group_cont">
+            <h4>Medlemmer</h4>
+            <div class="members_cont" id="members_cont">
+                <p>N1</p>
+                <p>N2</p>
+            </div>
+
+            <h4 class="taskverifier_title" id="taskverifier_title">Post XX</h4>
+            <div>
+                <!--TODO: slider -->
+            </div>
+
+            <h4 class="comment_title" id="comment_title">Kommentar til gXXX på pXX</h4>
+            <!--TODO: kommentarfelt -->
         </div>
-        <button class="big_confirm_btn" onclick="">Done</button>
     </div>
 
-    <div class="group_header">
-        <button onclick="exit()"><</button>
-        <p>Gruppe XXX</p>
-    </div>
 
     <!--START Hjelp knapp og overlay -->
     <button class="help_btn" onclick="toggle_help()">?</button>
     <div class="overlay center" id="help_overlay">
         <div>
-            <p>Skriv inn gruppenummeret du vil endre besvarelsesstatus til.</p>
-            <br/><p>Hvis dette er feil post, gå tilbake med knappen oppe til høyre. Skriv deretter inn en annen postkode.</p>
+            <p>Bruk slideren under "post [nr]" for å endre oppgavestatusen til gruppa på denne posten.</p>
+            <p>Det er også mulig å skrive en kommentar til gruppen anngående denne posten. Det er et felt til dette neders på siden.</p>
         </div>
         <button onclick="toggle_help()">Tilbake</button>
     </div>
     <!--SLUTT Hjelp knapp og overlay -->
 </body>
 <script src="script.js"></script>
+<script> group_page_loaded(); </script>
 </html>

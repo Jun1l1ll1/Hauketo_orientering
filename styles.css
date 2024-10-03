@@ -26,6 +26,12 @@ body, html {
 
     margin: 0px;
     padding: 0px;
+
+    &:has(.group_cont) {
+        @media screen and (min-width: 500px) {
+            background-color: var(--cont_color);
+        }
+    }
 }
 
 input, button {
@@ -59,6 +65,11 @@ h1, h2, h3, h4, h5, p {
 .center {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.center_vertical {
+    display: flex;
     align-items: center;
     flex-direction: column;
 }
@@ -148,9 +159,44 @@ p:has(~.big_inp) {
 
 
 .group_header {
-    position: absolute;
     display: flex;
-    top: 0px;
-    left: 0px;
     width: 100vw;
+
+    > * {
+        margin: 10px;
+        color: var(--text_c_obscure);
+        font-weight: bold;
+    }
+    > button {
+        background-color: rgba(0,0,0,0);
+        padding: 0px;
+    }
+}
+
+
+.group_cont {
+    width: 100vw;
+    @media screen and (min-width: 500px) {
+        width: 500px;
+        border-radius: 10px;
+        background-color: var(--bg_color);
+    }
+    box-sizing: border-box;
+    padding: 10px;
+
+    p {
+        font-size: 1rem;
+    }
+}
+
+.members_cont {
+    padding-left: 20px;
+}
+
+.taskverifier_title {
+    margin-top: 50px;
+}
+
+.comment_title {
+    margin-top: 50px;
 }
