@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post XX - Hauketo orientering</title>
+    <title id="page_title">Post -- - Hauketo orientering</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="center full">
-        <h1 class="title">Post XX</h1>
+        <h1 class="title" id="post_title">Post --</h1>
         <div>
             <p>Gruppenummer</p>
             <input class="big_inp" type="number" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off">
@@ -30,5 +30,16 @@
     <!--SLUTT Hjelp knapp og overlay -->
 </body>
 <script src="script.js"></script>
-<script> post_page_loaded(); </script>
+
+<script type="module">
+    import { findPost } from "./db.js";
+
+    const data = await findPost();
+    if (data == undefined) {
+        exit();
+    } else {
+        document.getElementById("post_title").innerText = "Post " + data.post_nr;
+        document.getElementById("page_title").innerText = `Post ${data.post_nr} - Hauketo orientering`;
+    }
+</script>
 </html>

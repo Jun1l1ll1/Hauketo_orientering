@@ -197,6 +197,40 @@ p:has(~.big_inp) {
     margin-top: 50px;
 }
 
+.slidecontainer { /*TODO */
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 50%;
+    height: 75px;
+    background: var(--inp_color);
+    border-radius: 80px;
+    outline: none;
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: var(--text_c_obscure);
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: var(--text_c_obscure);
+    cursor: pointer;
+}
+
+
 .comment_title {
     margin-top: 50px;
 }

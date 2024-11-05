@@ -4,14 +4,14 @@ console.log('%cWebsite by Juni', 'background: #ff7777; font-weight: bold; paddin
 
 
 function get_postcode_cookie() {
-    let code = '';
+    let code = 'not_found';
 
     let name = 'postcode=';
     let cookie_list = document.cookie.split(';');
     for(let i = 0; i < cookie_list.length; i++) {
         let c = cookie_list[i];
         if (c.trim().indexOf(name) == 0) {
-            code = c.substring(name.length, c.length);
+            code = c.substring(name.length+1, c.length);
             break;
         }
     }
@@ -28,6 +28,12 @@ function cookie_postcode(code) {
 }
 
 
+function get_group_nr() {
+    const url_params = new URLSearchParams(window.location.search);
+    return url_params.get('nr');
+}
+
+
 
 
 function index_loaded() {
@@ -35,26 +41,6 @@ function index_loaded() {
     if (code.length == 4) {
         document.location.href = './post.html';
     }
-}
-function post_page_loaded() {
-    let code = get_postcode_cookie()
-    if (code == '') {
-        document.location.href = './';
-    }
-}
-function group_page_loaded() {
-    let code = get_postcode_cookie()
-    if (code == '') {
-        document.location.href = './';
-    }
-
-    const url_params = new URLSearchParams(window.location.search);
-
-    document.getElementById("members_cont")//TODO endre til gruppemedlemmer
-    document.getElementById("group_title").innerText = "Gruppe "+url_params.get("nr")
-    document.getElementById("taskverifier_title").innerText//TODO endre til postnummer
-    document.getElementById("comment_title").innerText = `Kommentar til g${url_params.get("nr")} på pXX`//TODO endre postnummer
-    
 }
 
 
@@ -102,5 +88,28 @@ function enter_group() {
 
     if (groupnr.length > 0) {
         document.location.href = './group.html?nr='+groupnr;
+    }
+}
+
+
+function show_members(members) {
+    let container = document.getElementById("members_cont")
+    container.innerHTML = "";
+    for (let member of members) {
+        container.innerHTML += `<p>${member}</p>`
+    }
+}
+
+function set_slider_taskverifier_value(post_status) {
+    let slider = document.getElementById("taskverifier_slider")
+    switch (post_status) {
+        case "correct":
+            slider.value = 0;
+            break;
+        case "incorrect":
+            slider.value = 2;
+            break;
+        default:
+            break;
     }
 }
