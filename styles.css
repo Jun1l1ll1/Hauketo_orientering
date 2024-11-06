@@ -202,6 +202,8 @@ p:has(~.big_inp) {
 }
 
 .slider {
+    --thumb_color: var(--text_c_obscure);
+
     -webkit-appearance: none;
     appearance: none;
     width: 50%;
@@ -209,6 +211,7 @@ p:has(~.big_inp) {
     background: var(--inp_color);
     border-radius: 80px;
     outline: none;
+    transition: .25s;
 }
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
@@ -218,16 +221,18 @@ p:has(~.big_inp) {
     width: 75px;
     height: 75px;
     border-radius: 50%;
-    background: var(--text_c_obscure);
+    background: var(--thumb_color);
     cursor: pointer;
+    transition: .25s;
 }
 
 .slider::-moz-range-thumb {
     width: 75px;
     height: 75px;
     border-radius: 50%;
-    background: var(--text_c_obscure);
+    background: var(--thumb_color);
     cursor: pointer;
+    transition: .25s;
 }
 
 

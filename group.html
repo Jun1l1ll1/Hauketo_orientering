@@ -19,9 +19,9 @@
                 <p>---</p>
             </div>
 
-            <h4 class="taskverifier_title" id="taskverifier_title">Post --</h4>
+            <h4 class="taskverifier_title" id="taskverifier_title">Post -- - -------</h4>
             <div class="center_vertical">
-                <input type="range" class="slider" name="taskverifier_slider" id="taskverifier_slider" max="2" value="1">
+                <input type="range" onchange="module.updateTaskverifier()" class="slider" name="taskverifier_slider" id="taskverifier_slider" max="2" value="1">
             </div>
 
             <h4 class="comment_title" id="comment_title">Kommentar til g-- på p--</h4>
@@ -43,9 +43,14 @@
 </body>
 <script src="script.js"></script>
 <script type="module" src="db.js"></script>
-<!-- <script> group_page_loaded(); </script> -->
+
+<script> 
+    const module = {};
+</script>
+
 <script type="module">
-    import { findPost, findGroup, addPostToGroup } from "./db.js";
+    import { findPost, findGroup, addPostToGroup, updateTaskverifier } from "./db.js";
+    module.updateTaskverifier = updateTaskverifier;
 
     const post_data = await findPost();
     if (post_data == undefined) {
@@ -53,10 +58,11 @@
     } else {
 
         const group_nr = get_group_nr()
+        if (group_nr == null) { back(); } 
+
         const group_data = await findGroup(group_nr);
-        if (group_data == undefined) {
-            back();
-        } else {
+        if (group_data == undefined) { back(); } 
+        else {
             if (group_data.visited_posts == undefined || !(group_data.visited_posts.hasOwnProperty(post_data.post_nr))) {
                 addPostToGroup(post_data.post_nr, group_nr, group_data.visited_posts);
             }
@@ -64,9 +70,9 @@
             document.getElementById("group_title").innerText = "Gruppe " + group_nr;
             document.getElementById("page_title").innerText = `Gruppe ${group_nr} - Hauketo orientering`;
             show_members(group_data.members);
-            document.getElementById("taskverifier_title").innerText = "Post " + post_data.post_nr;
+            document.getElementById("taskverifier_title").innerText = "Post " + post_data.post_nr + " - " + group_data.visited_posts[post_data.post_nr];
             document.getElementById("comment_title").innerText = `Kommentar til g${group_nr} på p${post_data.post_nr}`;
-            set_slider_taskverifier_value(group_data.visited_posts[post_data.post_nr])
+            update_slider_taskverifier(group_data.visited_posts[post_data.post_nr])
         }
 
     }

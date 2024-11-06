@@ -45,9 +45,47 @@ export async function findGroup(nr) {
 export async function addPostToGroup(postnr, groupnr, current_posts) {
     const group_ref = doc(db, "groups", groupnr);
     let new_posts = {...current_posts};
-    new_posts[postnr] = "uncompleted";
+    new_posts[postnr] = "ikke gjort";
 
     await updateDoc(group_ref, {
         visited_posts: new_posts
     });
+}
+
+
+export async function updateTaskverifier() {
+    
+
+    let post_data = await findPost();
+    let groupnr = get_group_nr();
+    let group_data = await findGroup(groupnr);
+    let verifier_value = document.getElementById("taskverifier_slider").value;
+
+    let post_status;
+    switch (verifier_value) {
+        case '0':
+            post_status = "riktig";
+            break;
+            
+        case '2':
+            post_status = "feil";
+            break;
+            
+        default:
+            post_status = "ikke gjort";
+            break;
+    }
+
+    update_slider_taskverifier(post_status);
+
+    let updated_posts = {...group_data.visited_posts};
+    updated_posts[post_data.post_nr] = post_status;
+
+    const group_ref = doc(db, "groups", groupnr);
+    await updateDoc(group_ref, {
+        visited_posts: updated_posts
+    });
+
+    
+    document.getElementById("taskverifier_title").innerText = "Post " + post_data.post_nr + " - " + post_status;
 }

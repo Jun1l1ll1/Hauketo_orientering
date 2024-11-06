@@ -100,16 +100,24 @@ function show_members(members) {
     }
 }
 
-function set_slider_taskverifier_value(post_status) {
+function update_slider_taskverifier(post_status) {
     let slider = document.getElementById("taskverifier_slider")
     switch (post_status) {
-        case "correct":
+        case "riktig":
+            slider.style.background = "var(--check_dark)"
+            slider.style.setProperty("--thumb_color", "var(--check_light)");
             slider.value = 0;
             break;
-        case "incorrect":
+
+        case "feil":
             slider.value = 2;
+            slider.style.background = "var(--cancel_dark)"
+            slider.style.setProperty("--thumb_color", "var(--cancel_light)");
             break;
+
         default:
+            slider.style.background = "var(--inp_color)"
+            slider.style.setProperty("--thumb_color", "var(--text_c_obscure)");
             break;
     }
 }
