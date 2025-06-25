@@ -34,7 +34,7 @@ body, html {
     }
 }
 
-input, button {
+input, button, .btn {
     font-family: inherit;
     font-size: inherit;
     border-radius: 10px;
@@ -42,9 +42,9 @@ input, button {
     background-color: var(--inp_color);
     padding: .5rem;
 }
-button:hover {
+button:hover, .btn:hover {
     filter: brightness(1.1)
-}button:active {
+}button:active, .btn:active {
     filter: brightness(1.25)
 }
 
@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, p {
         border-radius: 10px;
         font-size: 1rem;
     }
-    > button {
+    > button, > .btn {
         margin-top: 10px;
         background-color: var(--cancel_light);
         color: var(--cancel_dark);
@@ -151,6 +151,23 @@ p:has(~.big_inp) {
     color: var(--check_dark);
     width: 5rem;
     height: 3rem;
+}
+
+
+
+
+
+
+.admin_btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0,0,0,0);
+    color: var(--text_c_obscure);
+}
+
+#admin_btn:not(:checked) ~ #admin_overlay {
+    display: none;
 }
 
 

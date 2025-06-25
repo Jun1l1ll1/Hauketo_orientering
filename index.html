@@ -12,8 +12,24 @@
             <p>Postkode</p>
             <input class="big_inp" type="text" name="code_inp" id="code_inp" placeholder="XXXX" autocomplete="off">
         </div>
-        <button class="big_confirm_btn" onclick="confirm_postcode()">Done</button>
+        <button class="big_confirm_btn" onclick="confirm_postcode()">Bruk</button>
     </div>
+    
+    <!--START Admin knapp og overlay -->
+    <label for="admin_btn" class="admin_btn">Admin</label>
+    <input style="display: none;" id="admin_btn" type="checkbox"></input>
+
+    <div class="overlay center" id="admin_overlay">
+        <div class="center">
+            <div>
+                <p>Adminkode</p>
+                <input class="big_inp" type="text" name="admin_code_inp" id="admin_code_inp" placeholder="AXXX" autocomplete="off">
+            </div>
+            <button class="big_confirm_btn" onclick="confirm_admincode()">Bruk</button>
+        </div>
+        <label for="admin_btn" class="btn">Tilbake</label>
+    </div>
+    <!--SLUTT Admin knapp og overlay -->
 
     <!--START Hjelp knapp og overlay -->
     <button class="help_btn" onclick="toggle_help()">?</button>

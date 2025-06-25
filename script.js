@@ -3,6 +3,15 @@ console.log('%cWebsite by Juni', 'background: #ff7777; font-weight: bold; paddin
 
 
 
+function add_cookie(exdays, name, value) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = 'expires='+ d.toUTCString();
+    document.cookie = name + '=' + value + ';' + expires + ';path=/';
+}
+
+
+
 function get_postcode_cookie() {
     let code = 'not_found';
 
@@ -20,11 +29,11 @@ function get_postcode_cookie() {
 }
 
 function cookie_postcode(code) {
-    let exdays = 1;
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    let expires = 'expires='+ d.toUTCString();
-    document.cookie = 'postcode=' + code + ';' + expires + ';path=/';
+    add_cookie(1, 'postcode', code);
+}
+
+function cookie_admincode(acode) {
+    add_cookie(1, 'admincode', acode);
 }
 
 
@@ -78,8 +87,17 @@ function confirm_postcode() {
     let code = document.getElementById('code_inp').value;
 
     if (code.length == 4) {
-        cookie_postcode(code.toUpperCase())
+        cookie_postcode(code.toUpperCase());
         document.location.href = './post.html';
+    }
+}
+
+function confirm_admincode() {
+    let acode = document.getElementById('admin_code_inp').value.toUpperCase();
+
+    if (acode.length == 4 && acode[0] == 'A') {
+        cookie_admincode(acode);
+        document.location.href = './admin.html';
     }
 }
 
