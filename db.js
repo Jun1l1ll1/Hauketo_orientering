@@ -20,6 +20,7 @@ const db = getFirestore(app);
 
 
 export async function findPost() {
+
     const doc_ref = doc(db, "posts", get_postcode_cookie());
     const doc_snap = await getDoc(doc_ref);
 
@@ -31,6 +32,7 @@ export async function findPost() {
 }
 
 export async function findGroup(nr) {
+
     const doc_ref = doc(db, "groups", nr);
     const doc_snap = await getDoc(doc_ref);
 
@@ -43,6 +45,7 @@ export async function findGroup(nr) {
 
 
 export async function addPostToGroup(postnr, groupnr, current_posts) {
+
     const group_ref = doc(db, "groups", groupnr);
     let new_posts = {...current_posts};
     new_posts[postnr] = "ikke gjort";
@@ -55,7 +58,6 @@ export async function addPostToGroup(postnr, groupnr, current_posts) {
 
 export async function updateTaskverifier() {
     
-
     let post_data = await findPost();
     let groupnr = get_group_nr();
     let group_data = await findGroup(groupnr);
@@ -64,11 +66,11 @@ export async function updateTaskverifier() {
     let post_status;
     switch (verifier_value) {
         case '0':
-            post_status = "riktig";
+            post_status = "feil";
             break;
             
         case '2':
-            post_status = "feil";
+            post_status = "riktig";
             break;
             
         default:
@@ -88,4 +90,19 @@ export async function updateTaskverifier() {
 
     
     document.getElementById("taskverifier_title").innerText = "Post " + post_data.post_nr + " - " + post_status;
+}
+
+export async function updateMemberAttendance(checkbox) {
+    
+    let groupnr = get_group_nr();
+    let group_data = await findGroup(groupnr);
+    let name = checkbox.id.substring(4);
+
+    let members_data = group_data.members;
+    members_data[name] = checkbox.checked;
+
+    const group_ref = doc(db, "groups", groupnr);
+    await updateDoc(group_ref, {
+        members: members_data
+    });
 }

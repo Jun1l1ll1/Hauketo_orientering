@@ -191,6 +191,17 @@ p:has(~.big_inp) {
 
 .members_cont {
     padding-left: 20px;
+
+    > div {
+        display: flex;
+
+        > input {
+            margin-right: 10px;
+            width: 1rem;
+            aspect-ratio: 1;
+
+        }
+    }
 }
 
 .taskverifier_title {

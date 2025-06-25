@@ -11,12 +11,12 @@ function get_postcode_cookie() {
     for(let i = 0; i < cookie_list.length; i++) {
         let c = cookie_list[i];
         if (c.trim().indexOf(name) == 0) {
-            code = c.substring(name.length+1, c.length);
+            code = c.substring(name.length, c.length);
             break;
         }
     }
 
-    return code.trim()
+    return code.trim();
 }
 
 function cookie_postcode(code) {
@@ -95,28 +95,34 @@ function enter_group() {
 function show_members(members) {
     let container = document.getElementById("members_cont")
     container.innerHTML = "";
-    for (let member of members) {
-        container.innerHTML += `<p>${member}</p>`
+    console.log(members);
+    for (let [member, present] of Object.entries(members)) {
+        container.innerHTML += `
+        <div>
+            <input onclick="module.updateMemberAttendance(this)" id="mbr_${member}" type="checkbox" ${present ? 'checked' : ''}>
+            <label for="mbr_${member}">${member}</label>
+        </div>
+        `
     }
 }
 
 function update_slider_taskverifier(post_status) {
-    let slider = document.getElementById("taskverifier_slider")
+    let slider = document.getElementById("taskverifier_slider");
     switch (post_status) {
-        case "riktig":
-            slider.style.background = "var(--check_dark)"
-            slider.style.setProperty("--thumb_color", "var(--check_light)");
-            slider.value = 0;
-            break;
-
         case "feil":
-            slider.value = 2;
-            slider.style.background = "var(--cancel_dark)"
+            slider.value = 0;
+            slider.style.background = "var(--cancel_dark)";
             slider.style.setProperty("--thumb_color", "var(--cancel_light)");
             break;
 
+        case "riktig":
+            slider.style.background = "var(--check_dark)";
+            slider.style.setProperty("--thumb_color", "var(--check_light)");
+            slider.value = 2;
+            break;
+
         default:
-            slider.style.background = "var(--inp_color)"
+            slider.style.background = "var(--inp_color)";
             slider.style.setProperty("--thumb_color", "var(--text_c_obscure)");
             break;
     }
