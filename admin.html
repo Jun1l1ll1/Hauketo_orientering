@@ -8,6 +8,50 @@
 </head>
 <body>
     
+    <button class="leave_btn" onclick="exit('admincode')">Logg ut</button>
+
+    <div class="header">
+        <button class="back_btn" onclick="home()">< Til start</button>
+    </div>
+    
+    <div class="center_vertical">
+        <div class="admin_cont">
+
+            <div class="container">
+                <h4>Resultater</h4>
+                <p>Kommer snart...</p>
+            </div>
+
+            <div class="container">
+                <h4>Poster</h4>
+                <a href="./admedit.html">Rediger grupper</a> <br/>
+
+                <input class="hide" type="checkbox" name="post_info_inp" id="post_info_inp">
+                <label id="post_info_show" for="post_info_inp">v Info om poster</label>
+                <label id="post_info_hide" for="post_info_inp">^ Info om poster</label>
+                <div id="post_info" class="grid">
+                    <p class="g_title">Postnr.</p>
+                    <p class="g_title">Grupper besøkt</p>
+                    <p class="g_title">Kode</p>
+
+                    <p>Post 0</p>
+                    <p>0</p>
+                    <p>1NGN</p>
+
+                    <p>Post 1</p>
+                    <p>Besøkt av ingen</p>
+                    <p>2NGN</p>
+                </div>
+            </div>
+
+            <div class="container">
+                <h4>Grupper</h4>
+                <p>Kommer snart...</p>
+            </div>
+
+        </div>
+    </div>
+    
 </body>
 <script src="script.js"></script>
 
@@ -15,10 +59,10 @@
     import { verifyACode } from "./db.js";
 
     const acode = get_cookie("admincode");
-    
+
     const correct = await verifyACode(acode);
     if (!correct) {
-        exit(true, "admincode");
+        exit("admincode");
     }
 </script>
 </html>

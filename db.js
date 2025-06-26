@@ -28,13 +28,12 @@ export async function verifyACode(acode) {
 }
 
 export async function findPost() {
-    const code = get_postcode_cookie();
+    const code = get_postcode();
     if (code == 'not_found') return;
 
     const doc_ref = doc(db, 'posts', code);
     const doc_snap = await getDoc(doc_ref);
 
-    console.log(doc_snap.exists());
 
     if (doc_snap.exists()) {
         return doc_snap.data();

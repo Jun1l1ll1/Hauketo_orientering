@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hauketo orientering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <button class="leave_btn" onclick="exit('admincode')">Logg ut</button>
+
+    <div class="header">
+        <button class="back_btn" onclick="back('admin')">< Til oversikt</button>
+    </div>
+    
+    <div class="center_vertical">
+        <div class="admin_cont">
+
+            <div class="container">
+                <h4>Noe</h4>
+                <p>Kommer snart...</p>
+            </div>
+
+        </div>
+    </div>
+    
+</body>
+<script src="script.js"></script>
+
+<script type="module">
+    import { verifyACode } from "./db.js";
+
+    const acode = get_cookie("admincode");
+
+    const correct = await verifyACode(acode);
+    if (!correct) {
+        exit("admincode");
+    }
+</script>
+</html>

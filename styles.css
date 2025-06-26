@@ -27,7 +27,7 @@ body, html {
     margin: 0px;
     padding: 0px;
 
-    &:has(.group_cont) {
+    &:has(.container) {
         @media screen and (min-width: 500px) {
             background-color: var(--cont_color);
         }
@@ -83,8 +83,9 @@ h1, h2, h3, h4, h5, p {
     background-color: rgba(0,0,0,.75);
     > div {
         background-color: var(--bg_color);
-        width: 80vw;
-        padding: 10px;
+        max-width: 80vw;
+        width: fit-content;
+        padding: 30px;
         border-radius: 10px;
         font-size: 1rem;
     }
@@ -95,6 +96,44 @@ h1, h2, h3, h4, h5, p {
         font-weight: bold;
     }
 }
+
+.container {
+    --width: 500px; /* Kan endres av utenfor */
+    --min_width: 500px;
+
+    width: 100vw;
+    @media screen and (min-width: 500px) {
+        width: var(--width);
+        min-width: var(--min_width);
+        max-width: calc(100vw - 40px);
+        border-radius: 10px;
+        background-color: var(--bg_color);
+    }
+    box-sizing: border-box;
+    padding: 10px;
+
+    p, label, a {
+        font-size: 1rem;
+    }
+}
+
+.grid {
+    --columns: 3;
+
+    display: grid;
+    grid-template-columns: repeat(var(--columns), auto);
+    box-sizing: border-box;
+
+    > * {
+        padding: 0px 5px;
+    }
+
+    > .g_title {
+        color: var(--text_c_obscure);
+    }
+}
+
+
 
 #help_overlay {
     display: none;
@@ -123,7 +162,7 @@ h1, h2, h3, h4, h5, p {
 
 .leave_btn {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 10px;
     background-color: rgba(0,0,0,0);
     color: var(--text_c_obscure);
@@ -172,10 +211,34 @@ p:has(~.big_inp) {
 
 
 
+.admin_cont {
+    .container {
+        --width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+#post_info_inp {
+    &:checked {
+        &~ #post_info_show {
+            display: none;
+        }
+    }
+    &:not(:checked) {
+        &~ #post_info_hide {
+            display: none;
+        }
+        &~ #post_info {
+            display: none;
+        }
+    }
+}
 
 
 
-.group_header {
+
+
+.header {
     display: flex;
     width: 100vw;
 
@@ -190,21 +253,6 @@ p:has(~.big_inp) {
     }
 }
 
-
-.group_cont {
-    width: 100vw;
-    @media screen and (min-width: 500px) {
-        width: 500px;
-        border-radius: 10px;
-        background-color: var(--bg_color);
-    }
-    box-sizing: border-box;
-    padding: 10px;
-
-    p {
-        font-size: 1rem;
-    }
-}
 
 .members_cont {
     padding-left: 20px;
@@ -266,4 +314,9 @@ p:has(~.big_inp) {
 
 .comment_title {
     margin-top: 50px;
+}
+
+
+.hide {
+    display: none;
 }

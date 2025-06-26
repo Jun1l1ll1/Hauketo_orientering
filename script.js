@@ -14,7 +14,7 @@ function get_cookie(name) {
     let code = 'not_found';
 
     let search = name + '=';
-    let cookie_list = document.cookie.split(';');
+    let cookie_list = document.cookie.split('; ');
     for(let i = 0; i < cookie_list.length; i++) {
         let c = cookie_list[i];
         if (c.trim().indexOf(search) == 0) {
@@ -22,15 +22,25 @@ function get_cookie(name) {
             break;
         }
     }
-
-    console.log(cookie_list)
+    
     return code.trim();
 }
 
 
 
-function get_postcode_cookie() {
-    return get_cookie('postcode');
+function get_postcode() {
+    let code = 'not_found';
+
+    const url_params = new URLSearchParams(window.location.search);
+    code = url_params.get('pcode');
+
+    if (code == null || code == 'not_found') {
+        code = get_cookie('postcode');
+    } else {
+        cookie_postcode(code);
+    }
+
+    return code;
 }
 
 function cookie_postcode(code) {
@@ -50,16 +60,14 @@ function get_group_nr() {
 
 
 
+
+
 function index_loaded() {
-    let code = get_postcode_cookie()
+    let code = get_postcode()
     if (code.length == 4) {
         document.location.href = './post.html';
     }
 }
-
-
-
-
 
 
 
@@ -79,14 +87,18 @@ function toggle_help() {
 
 
 
-function exit(remove_cookie=true, name='postcode') {
-    if (remove_cookie) document.cookie = name+'=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;';
+function exit(name='postcode') {
+    if (name != '') document.cookie = name+'=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;';
 
     document.location.href = './';
 }
 
-function back() {
-    document.location.href = './post.html';
+function home() {
+    document.location.href = './';
+}
+
+function back(location='post') {
+    document.location.href = './'+location+'.html';
 }
 
 function confirm_postcode() {
@@ -99,6 +111,10 @@ function confirm_postcode() {
 }
 
 function confirm_admincode() {
+    if (get_cookie('admincode') != 'not_found') {
+        document.location.href = './admin.html';
+    }
+
     let acode = document.getElementById('admin_code_inp').value.toUpperCase();
 
     if (acode.length == 4 && acode[0] == 'A') {
