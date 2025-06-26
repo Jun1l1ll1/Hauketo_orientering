@@ -9,4 +9,16 @@
 <body>
     
 </body>
+<script src="script.js"></script>
+
+<script type="module">
+    import { verifyACode } from "./db.js";
+
+    const acode = get_cookie("admincode");
+    
+    const correct = await verifyACode(acode);
+    if (!correct) {
+        exit(true, "admincode");
+    }
+</script>
 </html>

@@ -10,30 +10,35 @@ function add_cookie(exdays, name, value) {
     document.cookie = name + '=' + value + ';' + expires + ';path=/';
 }
 
-
-
-function get_postcode_cookie() {
+function get_cookie(name) {
     let code = 'not_found';
 
-    let name = 'postcode=';
+    let search = name + '=';
     let cookie_list = document.cookie.split(';');
     for(let i = 0; i < cookie_list.length; i++) {
         let c = cookie_list[i];
-        if (c.trim().indexOf(name) == 0) {
-            code = c.substring(name.length, c.length);
+        if (c.trim().indexOf(search) == 0) {
+            code = c.substring(search.length, c.length);
             break;
         }
     }
 
+    console.log(cookie_list)
     return code.trim();
 }
 
+
+
+function get_postcode_cookie() {
+    return get_cookie('postcode');
+}
+
 function cookie_postcode(code) {
-    add_cookie(1, 'postcode', code);
+    add_cookie(1, 'postcode', code.toUpperCase());
 }
 
 function cookie_admincode(acode) {
-    add_cookie(1, 'admincode', acode);
+    add_cookie(1, 'admincode', acode.toUpperCase());
 }
 
 
@@ -74,8 +79,9 @@ function toggle_help() {
 
 
 
-function exit() {
-    document.cookie = "postcode=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;";
+function exit(remove_cookie=true, name='postcode') {
+    if (remove_cookie) document.cookie = name+'=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;';
+
     document.location.href = './';
 }
 
@@ -84,10 +90,10 @@ function back() {
 }
 
 function confirm_postcode() {
-    let code = document.getElementById('code_inp').value;
+    let code = document.getElementById('code_inp').value.toUpperCase();
 
     if (code.length == 4) {
-        cookie_postcode(code.toUpperCase());
+        cookie_postcode(code);
         document.location.href = './post.html';
     }
 }
