@@ -130,10 +130,10 @@ export async function editMembers(group_nr) {
         if (te != '') { names_obj[te] = true; }
     });
 
-    const coll_ref = collection(db, "groups");
+    const coll_ref = collection(db, 'groups');
 
-    if (group_nr != -1) {
-        const doc_ref = doc(coll_ref, group_nr);
+    if (group_nr != '') {
+        const doc_ref = doc(coll_ref, group_nr.toString());
         const doc_snap = await getDoc(doc_ref);
 
         if (doc_snap.exists()) {
