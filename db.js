@@ -2,7 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebas
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-import { doc, getDoc, updateDoc  } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+import { doc, getDoc, updateDoc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
 const firebase_config = {
     apiKey: 'AIzaSyBg2kBswm2kRPcSsyPoaBsY-kPjuLiquc4',
@@ -116,4 +116,57 @@ export async function updateMemberAttendance(checkbox) {
     await updateDoc(group_ref, {
         members: members_data
     });
+}
+
+
+export async function editMembers(group_nr) {
+    const names = document.getElementById('add_names_inp').value;
+    if (names == '') { return 0 }
+
+    const names_list = names.split(',');
+    let names_obj = {};
+    names_list.forEach(e => {
+        let te = e.trim();
+        if (te != '') { names_obj[te] = true; }
+    });
+
+    const coll_ref = collection(db, "groups");
+
+    if (group_nr != -1) {
+        const doc_ref = doc(coll_ref, group_nr);
+        const doc_snap = await getDoc(doc_ref);
+
+        if (doc_snap.exists()) {
+            await updateDoc(doc_ref, {
+                members: names_obj
+            });
+
+            close_edit_group_members();
+            return 1;
+        }
+    }
+
+    let available_id = -1;
+    let last_id = 0;
+
+    const query_snapshot = await getDocs(coll_ref);
+    query_snapshot.forEach((doc) => {
+        if (available_id == -1) { // Only check if none is found yet
+            if (last_id+1 < parseInt(doc.id)) { // An ID was skipped
+                available_id = last_id+1;
+            }
+        }
+        last_id = parseInt(doc.id);
+    });
+    if (available_id == -1) { // If no spaces must be filled
+        available_id = last_id+1;
+    }
+
+    await setDoc( doc(coll_ref, available_id.toString()), {
+        members: names_obj,
+        visited_posts: {}
+    });
+
+    console.log(names_list);
+    close_edit_group_members();
 }

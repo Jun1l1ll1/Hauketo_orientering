@@ -87,6 +87,39 @@ function toggle_help() {
 
 
 
+
+
+
+function open_edit_group_members(group_nr=-1) {
+    let cont = document.getElementById('add_post_cont');
+
+    cont.innerHTML = `
+        <h4>${group_nr == -1 ? 'Legg til ny' : 'Rediger post ' + group_nr}</h4> <br/>
+        <p>Skriv inn navn separert med komma:</p>
+        <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C.">
+        <button onclick="module.editMembers(${group_nr})" class="add_btn small">Godkjenn</button>
+        <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
+    `;
+
+    if (cont.classList.contains('hide')) {
+        cont.classList.remove('hide');
+    }
+}
+
+function close_edit_group_members() {
+    let cont = document.getElementById('add_post_cont');
+
+    if (!cont.classList.contains('hide')) {
+        cont.classList.add('hide');
+    }
+    cont.innerHTML = '';
+}
+
+
+
+
+
+
 function exit(name='postcode') {
     if (name != '') document.cookie = name+'=; expires=Thu, 02 Feb 1942 00:00:00 UTC; path=/;';
 
@@ -132,10 +165,12 @@ function enter_group() {
 }
 
 
+
+
+
 function show_members(members) {
     let container = document.getElementById("members_cont")
     container.innerHTML = "";
-    console.log(members);
     for (let [member, present] of Object.entries(members)) {
         container.innerHTML += `
         <div>

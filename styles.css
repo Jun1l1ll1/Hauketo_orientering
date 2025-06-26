@@ -4,10 +4,10 @@
     --inp_color: #3E3E49;
     --cont_color: #1E1E26;
     --text_color: #FFFFFF;
-    --text_c_obscure: #82828E;
+    --text_c_obscure: #9797a0;
 
     --check_light: #2FB6A6;
-    --check_dark: #005E6C;
+    --check_dark: #004550;
     --cancel_light: #DC6464;
     --cancel_dark: #7B0C2C;
 
@@ -41,6 +41,15 @@ input, button, .btn {
     border: none;
     background-color: var(--inp_color);
     padding: .5rem;
+    width: fit-content;
+    height: fit-content;
+
+    &.small {
+        padding: 5px 10px;
+    }
+}
+button, .btn {
+    cursor: pointer;
 }
 button:hover, .btn:hover {
     filter: brightness(1.1)
@@ -72,6 +81,13 @@ h1, h2, h3, h4, h5, p {
     display: flex;
     align-items: center;
     flex-direction: column;
+}
+
+.left {
+    float: left;
+}
+.right {
+    float: right;
 }
 
 .overlay {
@@ -122,7 +138,6 @@ h1, h2, h3, h4, h5, p {
 
     display: grid;
     grid-template-columns: repeat(var(--columns), auto);
-    box-sizing: border-box;
 
     > * {
         padding: 0px 5px;
@@ -218,19 +233,74 @@ p:has(~.big_inp) {
     }
 }
 
-#post_info_inp {
+.edit_btn {
+    color: var(--text_color);
+    text-decoration: none;
+    height: fit-content;
+}
+
+.info_inp {
     &:checked {
-        &~ #post_info_show {
+        ~ .info_show {
             display: none;
         }
     }
     &:not(:checked) {
-        &~ #post_info_hide {
+        ~ .info_hide {
             display: none;
         }
-        &~ #post_info {
+        ~ .info_cont {
             display: none;
         }
+    }
+}
+
+
+
+.add_btn {
+    background-color: var(--check_light);
+    color: var(--check_dark);
+    font-weight: bold;
+}
+
+.cancel_btn {
+    color: var(--text_c_obscure);
+    font-weight: bold;
+}
+
+.remove_btn {
+    background-color: var(--cancel_light);
+    color: var(--cancel_dark);
+    font-weight: bold;
+}
+
+.add_post_cont {
+    > input {
+        font-size: 1rem;
+        width: calc(100% - 20px);
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+    > button {
+        font-size: 1rem;
+    }
+}
+
+.edit_list {
+    list-style-type: none;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.edit_existing_li {
+    margin: 10px 0px;
+
+    .remove_btn {
+        margin-left: 10px;
+    }
+
+    span {
+        color: var(--text_c_obscure);
     }
 }
 

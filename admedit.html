@@ -17,9 +17,28 @@
     <div class="center_vertical">
         <div class="admin_cont">
 
+            <button onclick="open_edit_group_members(-1)" class="add_btn">Legg til ny</button><br/><br/>
+
+            <div id="add_post_cont" class="container add_post_cont hide">
+                <!-- <h4>Legg til ny</h4> <br/>
+                <p>Skriv inn navn separert med komma:</p>
+                <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C.">
+                <button class="add_btn small">Godkjenn</button>
+                <button class="cancel_btn small">Cancel</button> -->
+            </div>
+
+            <!-- <div>
+                <p>Status kommer her...</p>
+                <br/>
+            </div> -->
+
             <div class="container">
-                <h4>Noe</h4>
-                <p>Kommer snart...</p>
+                <h4>Rediger eksisterende poster</h4>
+                <ul class="edit_list"> <!--TODO Give function to remove button -->
+                    <li class="edit_existing_li"> <button onclick="open_edit_post_members(0)" class="small">Gruppe 0 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
+                    <li class="edit_existing_li"> <button onclick="open_edit_post_members(1)" class="small">Gruppe 1 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
+                    <li class="edit_existing_li"> Post 0 <span>- Kode: 1NGN</span> <button class="remove_btn small">Fjern</button></li>
+                </ul>
             </div>
 
         </div>
@@ -28,8 +47,13 @@
 </body>
 <script src="script.js"></script>
 
+<script> 
+    const module = {};
+</script>
+
 <script type="module">
-    import { verifyACode } from "./db.js";
+    import { verifyACode, editMembers } from "./db.js";
+    module.editMembers = editMembers; 
 
     const acode = get_cookie("admincode");
 
@@ -37,5 +61,8 @@
     if (!correct) {
         exit("admincode");
     }
+
+    //TODO Get current members of each group, and fill the list
+    //TODO Do the same for posts if ?edit=posts (but no members)
 </script>
 </html>

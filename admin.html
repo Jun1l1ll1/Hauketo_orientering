@@ -23,13 +23,15 @@
             </div>
 
             <div class="container">
-                <h4>Poster</h4>
-                <a href="./admedit.html">Rediger grupper</a> <br/>
+                <div class="edit_title_cont">
+                    <h4 class="left">Poster</h4>
+                    <a href="./admedit.html?edit=posts" class="btn edit_btn right">Rediger</a> <br/><br/>
+                </div>
 
-                <input class="hide" type="checkbox" name="post_info_inp" id="post_info_inp">
-                <label id="post_info_show" for="post_info_inp">v Info om poster</label>
-                <label id="post_info_hide" for="post_info_inp">^ Info om poster</label>
-                <div id="post_info" class="grid">
+                <input class="hide info_inp" type="checkbox" name="group_info_inp" id="post_info_inp">
+                <label class="info_show btn small" for="post_info_inp">v Info om poster</label>
+                <label class="info_hide btn small" for="post_info_inp">^ Info om poster</label>
+                <div class="info_cont grid">
                     <p class="g_title">Postnr.</p>
                     <p class="g_title">Grupper besøkt</p>
                     <p class="g_title">Kode</p>
@@ -39,14 +41,35 @@
                     <p>1NGN</p>
 
                     <p>Post 1</p>
-                    <p>Besøkt av ingen</p>
+                    <p>Ingen</p>
                     <p>2NGN</p>
                 </div>
             </div>
 
             <div class="container">
-                <h4>Grupper</h4>
-                <p>Kommer snart...</p>
+                <h4 class="left">Grupper</h4>
+                <a href="./admedit.html?edit=groups" class="btn edit_btn right">Rediger</a> <br/><br/>
+
+                <input class="hide info_inp" type="checkbox" name="group_info_inp" id="group_info_inp">
+                <label class="info_show btn small" for="group_info_inp">v Info om grupper</label>
+                <label class="info_hide btn small" for="group_info_inp">^ Info om grupper</label>
+                <div class="info_cont grid">
+                    <p class="g_title">Gruppenr.</p>
+                    <p class="g_title">Poster besøkt</p>
+                    <p class="g_title">Medlemmer</p>
+
+                    <p>Post 0</p>
+                    <p>0</p>
+                    <p>Juni E. J, Silje C. H., Navn N. Navnensen N. N.</p>
+
+                    <p>Post 1</p>
+                    <p>Ingen</p>
+                    <p>Iver E. J.</p>
+                </div>
+            </div>
+
+            <div class="container">
+                <p>Bytt adminkode (kommer kanskje snart)</p>
             </div>
 
         </div>
