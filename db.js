@@ -20,11 +20,13 @@ const db = getFirestore(app);
 
 
 export async function verifyACode(acode) {
-    const doc_ref = doc(db, 'other', 'admin');
-    const doc_snap = await getDoc(doc_ref);
-    const data = doc_snap.data()
-
-    return (data.acode == acode);
+    try {
+        const doc_ref = doc(db, 'admin', acode);
+        const doc_snap = await getDoc(doc_ref);
+        return doc_snap.exists();
+    } catch (error) {
+        return false;
+    }
 }
 
 export async function findPost() {
