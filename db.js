@@ -93,8 +93,8 @@ export async function updateTaskverifier() {
             post_status = 'ikke gjort';
             break;
     }
-
-    update_slider_taskverifier(post_status);
+    
+    update_slider_taskverifier(post_data.post_nr, post_status);
 
     let updated_posts = {...group_data.visited_posts};
     updated_posts[post_data.post_nr].status = post_status;
@@ -104,8 +104,8 @@ export async function updateTaskverifier() {
         visited_posts: updated_posts
     });
 
+    // document.getElementById('taskverifier_title').innerText = 'Post ' + post_data.post_nr + ' - ' + post_status;
     
-    document.getElementById('taskverifier_title').innerText = 'Post ' + post_data.post_nr + ' - ' + post_status;
 }
 
 export async function updateMemberAttendance() {
@@ -230,7 +230,6 @@ export async function editMembers(group_nr) {
         visited_posts: {}
     });
 
-    console.log(names_list);
     close_edit_group_members();
 }
 

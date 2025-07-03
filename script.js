@@ -233,6 +233,7 @@ function show_members(members, attendance) {
 }
 
 function update_slider_taskverifier(post_nr, post_status) {
+    
     let slider = document.getElementById("taskverifier_slider");
     switch (post_status) {
         case "feil":
