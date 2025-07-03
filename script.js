@@ -52,10 +52,21 @@ function cookie_admincode(acode) {
 }
 
 
-function get_group_nr() {
+
+
+function get_URL_param(name) {
     const url_params = new URLSearchParams(window.location.search);
-    return url_params.get('nr');
+    return url_params.get(name);
 }
+
+function get_group_nr() {
+    return get_URL_param('nr');
+}
+
+function get_edit_type() {
+    return get_URL_param('edit');
+}
+
 
 
 
@@ -90,13 +101,13 @@ function toggle_help() {
 
 
 
-function open_edit_group_members(group_nr='') {
+function open_edit_group_members(group_nr='', members='') {
     let cont = document.getElementById('add_post_cont');
 
     cont.innerHTML = `
         <h4>${group_nr == '' ? 'Legg til ny' : 'Rediger post ' + group_nr}</h4> <br/>
         <p>Skriv inn navn separert med komma:</p>
-        <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C.">
+        <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C." value="${group_nr == '' ? '' : members}">
         <button onclick="module.editMembers('${group_nr}')" class="add_btn small">Godkjenn</button>
         <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
     `;
@@ -113,6 +124,46 @@ function close_edit_group_members() {
         cont.classList.add('hide');
     }
     cont.innerHTML = '';
+}
+
+function show_all_groups(groups) {
+    if (groups.length < 1) {
+        document.getElementById('edit_list').innerHTML = 'Klikk "Legg til ny" for å lage en gruppe.';
+        return
+    }
+
+    let html = '';
+
+    for (const group of groups) {
+        html += `
+        <li class="edit_existing_li">
+            <button onclick="open_edit_group_members('${group.nr}', '${group.names.join(", ")}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(", ")}</span></button>
+            <button onclick="module.removeDoc('groups', '${group.nr}')" class="remove_btn small">Fjern</button>
+        </li>`;
+    }
+
+    document.getElementById('edit_list').innerHTML = html;
+}
+
+function show_all_posts(posts) {
+    if (posts.length < 1) {
+        document.getElementById('edit_list').innerHTML = 'Klikk "Legg til ny" for å lage en post.';
+        return
+    }
+
+    posts.sort((a, b) => a.nr - b.nr);
+
+    let html = '';
+
+    for (const post of posts) {
+        html += `
+        <li class="edit_existing_li">
+            Post ${post.nr} <span>- Kode: ${post.code}</span>
+            <button onclick="module.removeDoc('posts', '${post.code}')" class="remove_btn small">Fjern</button>
+        </li>`;
+    }
+
+    document.getElementById('edit_list').innerHTML = html;
 }
 
 
@@ -168,20 +219,20 @@ function enter_group() {
 
 
 
-function show_members(members) {
+function show_members(members, attendance) {
     let container = document.getElementById("members_cont")
     container.innerHTML = "";
-    for (let [member, present] of Object.entries(members)) {
+    for (let member of members) {
         container.innerHTML += `
         <div>
-            <input onclick="module.updateMemberAttendance(this)" id="mbr_${member}" type="checkbox" ${present ? 'checked' : ''}>
+            <input onclick="module.updateMemberAttendance()" id="mbr_${member}" type="checkbox" ${attendance.includes(member) ? 'checked' : ''}>
             <label for="mbr_${member}">${member}</label>
         </div>
         `
     }
 }
 
-function update_slider_taskverifier(post_status) {
+function update_slider_taskverifier(post_nr, post_status) {
     let slider = document.getElementById("taskverifier_slider");
     switch (post_status) {
         case "feil":
@@ -201,4 +252,6 @@ function update_slider_taskverifier(post_status) {
             slider.style.setProperty("--thumb_color", "var(--text_c_obscure)");
             break;
     }
+    
+    document.getElementById("taskverifier_title").innerText = "Post " + post_nr + " - " + post_status;
 }

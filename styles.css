@@ -200,6 +200,8 @@ p:has(~.big_inp) {
 
 .big_confirm_btn {
     margin-top: 20px;
+    font-size: larger;
+    font-weight: bold;
 
     background-color: var(--check_light);
     color: var(--check_dark);
@@ -227,6 +229,7 @@ p:has(~.big_inp) {
 
 
 .admin_cont {
+    padding-top: 3.5rem;
     .container {
         --width: 100%;
         margin-bottom: 20px;

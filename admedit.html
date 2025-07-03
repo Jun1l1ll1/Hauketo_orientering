@@ -17,7 +17,7 @@
     <div class="center_vertical">
         <div class="admin_cont">
 
-            <button onclick="open_edit_group_members()" class="add_btn">Legg til ny</button><br/><br/>
+            <button id="new_post_or_group_btn" onclick="open_edit_group_members()" class="add_btn">Legg til ny</button><br/><br/>
 
             <div id="add_post_cont" class="container add_post_cont hide">
                 <!-- <h4>Legg til ny</h4> <br/>
@@ -33,11 +33,12 @@
             </div> -->
 
             <div class="container">
-                <h4>Rediger eksisterende poster</h4>
-                <ul class="edit_list"> <!--TODO Give function to remove button -->
-                    <li class="edit_existing_li"> <button onclick="open_edit_group_members('0')" class="small">Gruppe 0 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
+                <h4 id="edit_existing_title"></h4>
+                <ul class="edit_list" id="edit_list"> <!--TODO Give function to remove button -->
+                    <li class="edit_existing_li">Vent litt...</li>
+                    <!-- <li class="edit_existing_li"> <button onclick="open_edit_group_members('0')" class="small">Gruppe 0 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
                     <li class="edit_existing_li"> <button onclick="open_edit_group_members('1')" class="small">Gruppe 1 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
-                    <li class="edit_existing_li"> Post 0 <span>- Kode: 1NGN</span> <button class="remove_btn small">Fjern</button></li>
+                    <li class="edit_existing_li"> Post 0 <span>- Kode: 1NGN</span> <button class="remove_btn small">Fjern</button></li> -->
                 </ul>
             </div>
 
@@ -52,8 +53,10 @@
 </script>
 
 <script type="module">
-    import { verifyACode, editMembers } from "./db.js";
-    module.editMembers = editMembers; 
+    import { verifyACode, editMembers, removeDoc, newPost, getAllGroups, getAllPosts } from "./db.js";
+    module.editMembers = editMembers;
+    module.removeDoc = removeDoc;
+    module.newPost = newPost;
 
     const acode = get_cookie("admincode");
 
@@ -61,6 +64,19 @@
     if (!correct) {
         exit("admincode");
     }
+
+    if (get_edit_type() == 'groups') {
+        document.getElementById('new_post_or_group_btn').setAttribute('onclick','open_edit_group_members()');
+        document.getElementById('edit_existing_title').innerText = 'Rediger eksisterende grupper';
+        let all_groups = await getAllGroups();
+        show_all_groups(all_groups);
+    } else {
+        document.getElementById('new_post_or_group_btn').setAttribute('onclick','module.newPost()');
+        document.getElementById('edit_existing_title').innerText = 'Oversikt over eksisterende poster';
+        let all_posts = await getAllPosts();
+        show_all_posts(all_posts);
+    }
+
 
     //TODO Get current members of each group, and fill the list
     //TODO Do the same for posts if ?edit=posts (but no members)
