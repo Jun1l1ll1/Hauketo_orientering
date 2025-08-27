@@ -19,7 +19,8 @@
 
             <div class="container">
                 <h4>Resultater</h4>
-                <p>Kommer snart...</p>
+                <button id="download_result_groups">Last ned gruppe-data</button>
+                <button id="download_result_individual">Last ned individ-data</button>
             </div>
 
             <div class="container">
@@ -69,17 +70,34 @@
             </div>
 
             <div class="container">
-                <p>Bytt adminkode (kommer kanskje snart)</p>
+                <p>Bytt adminkode: Kontakt utvikler direkte, eller via Silje C. Heggelund</p>
             </div>
 
         </div>
     </div>
+
+    <!-- Data is added here with setExportDataGroups() and setExportDataIndividual() so it can be exported and downloaded as an excel file -->
+    <table class="hide" id="result_group_export_table"></table>
+    <table class="hide" id="result_individual_export_table"></table>
     
 </body>
 <script src="script.js"></script>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+    document.getElementById("download_result_groups").addEventListener('click', function() {
+        var wb = XLSX.utils.table_to_book(document.getElementById("result_group_export_table"));
+        XLSX.writeFile(wb, "Orientering - Resulatater Gruppe.xlsx");
+    });
+
+    document.getElementById("download_result_individual").addEventListener('click', function() {
+        var wb = XLSX.utils.table_to_book(document.getElementById("result_individual_export_table"));
+        XLSX.writeFile(wb, "Orientering - Resulatater Individ.xlsx");
+    });
+</script>
+
 <script type="module">
-    import { verifyACode } from "./db.js";
+    import { verifyACode, setExportDataGroups, setExportDataIndividual } from "./db.js";
 
     const acode = get_cookie("admincode");
 
@@ -87,5 +105,8 @@
     if (!correct) {
         exit("admincode");
     }
+
+    setExportDataGroups();
+    setExportDataIndividual();
 </script>
 </html>

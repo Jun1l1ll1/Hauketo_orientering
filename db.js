@@ -148,26 +148,32 @@ export async function newPost() {
 
     const coll_ref = collection(db, 'posts');
 
-    // Find first available post number
-    let available_nr = -1;
-    let last_nr = 0;
-
+    let post_nrs = [];
     const query_snapshot = await getDocs(coll_ref);
     query_snapshot.forEach((doc) => {
-        if (available_nr == -1) { // Only check if none is found yet
-            if (last_nr+1 < parseInt(doc.data().post_nr)) { // A nr was skipped
-                available_nr = last_nr+1;
+        post_nrs.push(parseInt(doc.data().post_nr));
+    });
+
+    let new_nr = -1;
+
+    post_nrs.sort();
+    //* Asumes post numbers start on 1
+    if (post_nrs[post_nrs.length-1] == post_nrs.length) new_nr = post_nrs.length+1;
+    else {
+        for (let i = 0; i < post_nrs.length; i++) {
+            if (post_nrs[i] != i+1) {
+                new_nr = i+1;
+                break;
             }
         }
-        last_nr = parseInt(doc.data().post_nr);
-    });
-    if (available_nr == -1) { // If no spaces must be filled
-        available_nr = last_nr+1;
     }
 
     await setDoc( doc(coll_ref, new_code), {
-        post_nr: available_nr
+        post_nr: new_nr
     });
+
+    let all_posts = await getAllPosts();
+    show_all_posts(all_posts);
 }
 
 function _generateCode(len = 4) {
@@ -182,11 +188,39 @@ function _generateCode(len = 4) {
 }
 
 
-export async function editMembers(group_nr) {
-    const names = document.getElementById('add_names_inp').value;
-    if (names == '') { return 0 }
+export async function editGroupNumSet() {
+    let name = document.getElementById('numset_edit_name').value;
+    let from = parseInt(document.getElementById('numset_edit_from').value);
+    let to = parseInt(document.getElementById('numset_edit_to').value);
 
-    const names_list = names.split(',');
+    if (name == '' || !from || from < 1 || to < from) return;
+    
+    const doc_ref = doc(db, 'other', 'group_nr');
+    const doc_snap = await getDoc(doc_ref);
+    let n_sets;
+    if (doc_snap.exists()) {
+        n_sets = doc_snap.data().sets;
+        n_sets[name] = [from, to];
+
+        await updateDoc(doc_ref, {
+            sets: n_sets
+        });
+    }
+
+    close_edit_numset();
+    show_numsets(n_sets);
+}
+
+
+export async function openEditGroup(group_nr='', members=null, numset_key='') {
+    let numsets = await getAllGroupNumSets();
+    open_edit_group_members(numsets, group_nr, members, numset_key);
+}
+
+export async function editMembers(group_nr, with_numset=false) {
+    const names_list = members_inps_to_array();
+    if (names_list.length == 0) { return 0 }
+
     let names_arr = [];
     names_list.forEach(e => {
         let te = e.trim();
@@ -195,6 +229,7 @@ export async function editMembers(group_nr) {
 
     const coll_ref = collection(db, 'groups');
 
+    //* Update existing group
     if (group_nr != '') {
         const doc_ref = doc(coll_ref, group_nr.toString());
         const doc_snap = await getDoc(doc_ref);
@@ -205,40 +240,91 @@ export async function editMembers(group_nr) {
             });
 
             close_edit_group_members();
+
+            let groups = await getAllGroups()
+            show_all_groups(groups)
+
             return 1;
         }
     }
 
-    let available_id = -1;
-    let last_id = 0;
+    //* New group
+    let from = 0; // 1 less than lowes possible nr
+    let to = -1; // -1: no hight cap
 
-    const query_snapshot = await getDocs(coll_ref);
-    query_snapshot.forEach((doc) => {
-        if (available_id == -1) { // Only check if none is found yet
-            if (last_id+1 < parseInt(doc.id)) { // An ID was skipped
-                available_id = last_id+1;
-            }
+    let numset_key = '';
+    if (with_numset) {
+        numset_key = document.getElementById('edit_group_choose_numset_select').value;
+
+        const doc_ref = doc(db, 'other', 'group_nr');
+        const doc_snap = await getDoc(doc_ref);
+
+        if (doc_snap.exists()) {
+            let this_set = doc_snap.data().sets[numset_key];
+            from = this_set[0] - 1;
+            if (this_set[1] && this_set[1] > 0) to = this_set[1];
         }
-        last_id = parseInt(doc.id);
-    });
-    if (available_id == -1) { // If no spaces must be filled
-        available_id = last_id+1;
     }
 
-    await setDoc( doc(coll_ref, available_id.toString()), {
+    let current_nr = from;
+    let doc_snap
+    do {
+        current_nr ++;
+        if (to > 0 && current_nr > to) {
+            console.warn('No available group number.')
+            return 0; //TODO Add note in HTML asking to change number set
+        }
+        
+        doc_snap = await getDoc( doc(coll_ref, current_nr.toString()) );
+    } while (doc_snap.exists());
+
+    await setDoc( doc(coll_ref, current_nr.toString()), {
         members: names_arr,
+        numberset: numset_key,
         visited_posts: {}
     });
 
     close_edit_group_members();
+
+    let groups = await getAllGroups();
+    show_all_groups(groups);
+
+    return 1;
 }
 
-export async function removeDoc(coll, document) {
+export async function removeDoc(coll, document, update=false) {
 
     await deleteDoc(doc(db, coll, document));
+
+    if (update) {
+        switch (coll) {
+            case 'groups':
+                show_all_groups( await getAllGroups() );
+                break;
+            
+            case 'posts':
+                show_all_posts( await getAllPosts() );
+                break;
+        
+            default:
+                break;
+        }
+    }
 }
 
 
+
+export async function getAllGroupNumSets() {
+
+    const doc_ref = doc(db, 'other', 'group_nr');
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        return doc_snap.data().sets;
+    }
+
+    return
+}
 
 export async function getAllGroups() {
 
@@ -270,5 +356,118 @@ export async function getAllPosts() {
     });
 
     return doc_info;
+}
+
+
+
+
+
+
+export async function setExportDataGroups() {
+    let cont = document.getElementById('result_group_export_table');
+
+    let html = `
+    <tr>
+        <th>Gruppe</th>
+        <th>Trinn</th>
+        <th>Starttid</th>
+        <th>Sluttid</th>
+        <th>Total tid</th>
+        <th>Ant. besvarte poster</th>
+        <th>Rette</th>
+        <th>Feil</th>
+    </tr>`;
+
+    const coll_ref = collection(db, 'groups');
+    const query_snap = await getDocs(coll_ref);
+
+    let data, correct, wrong, grade;
+    query_snap.forEach((doc) => {
+        data = doc.data();
+
+        correct = 0; wrong = 0;
+        for (const visited of Object.values(data.visited_posts)) {
+            if (visited.status == 'riktig') correct++;
+            else if (visited.status == 'feil') wrong++;
+        }
+
+        switch (data.numberset) {
+            case '8. klasse':
+                grade = '8';
+                break;
+
+            case '9. klasse':
+                grade = '9';
+                break;
+                
+            case '10. klasse':
+                grade = '10';
+                break;
+        
+            default:
+                grade = '';
+                break;
+        }
+
+        html += `
+        <tr>
+            <td>${doc.id}</td>
+            <td>${grade}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>${correct+wrong}</td>
+            <td>${correct}</td>
+            <td>${wrong}</td>
+        </tr>`;
+    });
+
+    cont.innerHTML = html;
+}
+
+
+export async function setExportDataIndividual() {
+    let cont = document.getElementById('result_individual_export_table');
+    
+    let html = `
+    <tr>
+        <th>Navn</th>
+        <th>Klasse</th>
+        <th>Gruppe</th>
+        <th>Ant. besvarte poster</th>
+        <th>Rette</th>
+        <th>Feil</th>
+    </tr>`;
+
+    const coll_ref = collection(db, 'groups');
+    const query_snap = await getDocs(coll_ref);
+
+    let data, correct, wrong, namelist;
+    query_snap.forEach((doc) => {
+        data = doc.data();
+
+        for (const namec of data.members) {
+            
+            correct = 0; wrong = 0;
+            for (const visited of Object.values(data.visited_posts)) {
+                if (visited.status == 'riktig' && visited.attendance.includes(namec)) correct++;
+                else if (visited.status == 'feil' && visited.attendance.includes(namec)) wrong++;
+            }
+
+            namelist = namec.split(';');
+
+            html += `
+            <tr>
+                <td>${namelist[0]}</td>
+                <td>${namelist[1] ? namelist[1] : ''}</td>
+                <td>${doc.id}</td>
+                <td>${correct+wrong}</td>
+                <td>${correct}</td>
+                <td>${wrong}</td>
+            </tr>`;
+        }
+    });
+
+    cont.innerHTML = html;
 }
 

@@ -99,22 +99,136 @@ function toggle_help() {
 
 
 
+function show_numsets(numsets) {
+    let html = '';
+    let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
+    
+    let from, to;
+    for (const name of keys_sorted) {
+        from = numsets[name][0];
+        to = numsets[name][1];
+        html += `<li><button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to ? to : ''})</button></li>`;
+    }
+    
+    // html += `<li><button onclick="open_edit_numset('Ekstra', 76)" class="small">Ekstra (76-)</button></li>`;
+    //? Allow the creation of more
+    // html += '<li><button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button></li>';
+
+    document.getElementById('all_numsets_ul').innerHTML = html;
+
+    let cont = document.getElementById('numset_cont');
+    if (cont.classList.contains('hide')) cont.classList.remove('hide');
+}
+
+function open_edit_numset(setname = '', from = -1, to = -1) {
+    let cont = document.getElementById('numset_edit_div');
 
 
-function open_edit_group_members(group_nr='', members='') {
-    let cont = document.getElementById('add_post_cont');
+    let name_inp = document.getElementById('numset_edit_name');
+    if (setname != '') name_inp.value = setname;
+    else name_inp.value = '';
 
-    cont.innerHTML = `
-        <h4>${group_nr == '' ? 'Legg til ny' : 'Rediger post ' + group_nr}</h4> <br/>
-        <p>Skriv inn navn separert med komma:</p>
-        <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C." value="${group_nr == '' ? '' : members}">
-        <button onclick="module.editMembers('${group_nr}')" class="add_btn small">Godkjenn</button>
-        <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
-    `;
+    let from_inp = document.getElementById('numset_edit_from');
+    if (from != -1) from_inp.value = from;
+    else from_inp.value = '';
+    
+    let to_inp = document.getElementById('numset_edit_to');
+    if (to != -1) to_inp.value = to;
+    else to_inp.value = '';
 
     if (cont.classList.contains('hide')) {
         cont.classList.remove('hide');
     }
+}
+
+function close_edit_numset() {
+    let cont = document.getElementById('numset_edit_div');
+
+    if (!cont.classList.contains('hide')) {
+        cont.classList.add('hide');
+    }
+}
+
+
+function open_edit_group_members(numsets, group_nr='', members=null, numset_key='') {
+    document.getElementById('numset_cont').classList.add('hide');
+    document.getElementById('new_post_or_group_btn').classList.add('hide');
+
+    let cont = document.getElementById('add_post_cont');
+
+    let html = `<h4 class="edit_group_title">${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4>`
+
+    if (group_nr == '') {
+        html += `
+            <div class="edit_group_choose_numset_cont">
+                <p>Velg nummersett:</p>
+                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select">`
+        ;
+        
+        let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
+        for (const numset of keys_sorted) {
+            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
+        }
+
+        html += `</select>
+            </div>`
+        ;
+    }
+    
+    html += `
+        <p>Rediger og legg til medlemmer:</p>
+        <ul class="edit_group_member_ul" id="edit_group_member_ul">`
+    ;
+
+    if (members != null) {
+        let members_list = members.split(',');
+        for (let i = 0; i < members_list.length; i++) {
+            let member = members_list[i];
+            let ml = member.split(';');
+            html += `
+            <li class="edit_group_member_li">
+                <input class="edit_member_inp edit_member_name_inp" type="text" name="edt_${member}_name" id="edt_${member}_name" value="${ml[0]}">
+                <input class="edit_member_inp edit_member_class_inp" type="text" name="edt_${member}_class" id="edt_${member}_class" placeholder="Klasse" value="${ml[1] == undefined ? '' : ml[1]}">
+                <button onclick="module.openEditGroup('${group_nr}', '${members_list.toSpliced(i, 1).join(',')}')" class="edit_member_inp remove_btn small">Fjern</button>
+            </li>`;
+        }
+    }
+    
+    html += `
+            <li> <button onclick="add_new_group_member(module, '${group_nr}')" class="small c_check">+</button> </li>
+        </ul>
+
+        <button onclick="module.editMembers('${group_nr}', ${group_nr == ''})" class="f_bold c_check small">Godkjenn</button>
+        <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
+    `;
+    cont.innerHTML = html;
+
+    if (cont.classList.contains('hide')) {
+        cont.classList.remove('hide');
+    }
+}
+function add_new_group_member(module, group_nr) {
+    let members = members_inps_to_array();
+    let new_members = members.length == 0 ? '' : members.join(',') + ',';
+
+    let numset_key = '';
+    if (group_nr == '') numset_key = document.getElementById('edit_group_choose_numset_select').value;
+
+    module.openEditGroup(group_nr, new_members, numset_key);
+}
+
+function members_inps_to_array() {
+    let members = [];
+    for (const li of document.getElementsByClassName('edit_group_member_li')) {
+        let name = li.getElementsByClassName('edit_member_name_inp')[0].value;
+        if (name == '') continue;
+
+        let clss = li.getElementsByClassName('edit_member_class_inp')[0].value;
+
+        let new_member = clss == '' ? name : name + ';' + clss;
+        members.push(new_member);
+    }
+    return members;
 }
 
 function close_edit_group_members() {
@@ -124,6 +238,9 @@ function close_edit_group_members() {
         cont.classList.add('hide');
     }
     cont.innerHTML = '';
+
+    document.getElementById('numset_cont').classList.remove('hide');
+    document.getElementById('new_post_or_group_btn').classList.remove('hide');
 }
 
 function show_all_groups(groups) {
@@ -134,11 +251,12 @@ function show_all_groups(groups) {
 
     let html = '';
 
+    groups.sort((a, b) => a.nr - b.nr);
     for (const group of groups) {
         html += `
         <li class="edit_existing_li">
-            <button onclick="open_edit_group_members('${group.nr}', '${group.names.join(", ")}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(", ")}</span></button>
-            <button onclick="module.removeDoc('groups', '${group.nr}')" class="remove_btn small">Fjern</button>
+            <button onclick="module.openEditGroup('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
+            <button onclick="module.removeDoc('groups', '${group.nr}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }
 
@@ -159,7 +277,7 @@ function show_all_posts(posts) {
         html += `
         <li class="edit_existing_li">
             Post ${post.nr} <span>- Kode: ${post.code}</span>
-            <button onclick="module.removeDoc('posts', '${post.code}')" class="remove_btn small">Fjern</button>
+            <button onclick="module.removeDoc('posts', '${post.code}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }
 
@@ -226,7 +344,7 @@ function show_members(members, attendance) {
         container.innerHTML += `
         <div>
             <input onclick="module.updateMemberAttendance()" id="mbr_${member}" type="checkbox" ${attendance.includes(member) ? 'checked' : ''}>
-            <label for="mbr_${member}">${member}</label>
+            <label for="mbr_${member}">${member.replace(/;(.*)$/g, ' <span class="ct_obscure">$1</span>')}</label>
         </div>
         `
     }

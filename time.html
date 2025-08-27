@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page_title">Tidtager - Hauketo orientering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="center full">
+        <div>
+            <p>Gruppenummer</p>
+            <input class="big_inp" type="number" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off">
+        </div>
+        <button class="big_confirm_btn" onclick="">Bruk</button>
+    </div>
+
+    <button class="leave_btn" onclick="exit('timercode')">Logg ut</button>
+    
+    <div class="header">
+        <button class="back_btn" onclick="home()">< Til start</button>
+    </div>
+
+    <!--START Hjelp knapp og overlay -->
+    <button class="help_btn" onclick="toggle_help()">?</button>
+    <div class="overlay center" id="help_overlay">
+        <div>
+            <p>-</p>
+            <br/><p>-</p>
+        </div>
+        <button onclick="toggle_help()">Tilbake</button>
+    </div>
+    <!--SLUTT Hjelp knapp og overlay -->
+</body>
+<script src="script.js"></script>
+
+<script type="module">
+    import { } from "./db.js";
+
+    // const data = await findPost();
+    // if (data == undefined) {
+    //     exit();
+    // } else {
+    //     document.getElementById("post_title").innerText = "Post " + data.post_nr;
+    //     document.getElementById("page_title").innerText = `Post ${data.post_nr} - Hauketo orientering`;
+    // }
+</script>
+</html>

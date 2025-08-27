@@ -31,6 +31,23 @@
     </div>
     <!--SLUTT Admin knapp og overlay -->
 
+    <!--START Timer knapp og overlay -->
+    <!--TODO Gi funksjonalitet -->
+    <label onclick="" for="timer_btn" class="timer_btn">Tidtager</label>
+    <input class="hide" id="timer_btn" type="checkbox"></input>
+
+    <div class="overlay center" id="timer_overlay">
+        <div class="center">
+            <div>
+                <p>Tidtager-code</p>
+                <input class="big_inp" type="text" name="timer_code_inp" id="timer_code_inp" placeholder="TXXX" autocomplete="off">
+            </div>
+            <button class="big_confirm_btn" onclick="">Bruk</button>
+        </div>
+        <label for="timer_btn" class="btn">Tilbake</label>
+    </div>
+    <!--SLUTT Timer knapp og overlay -->
+
     <!--START Hjelp knapp og overlay -->
     <button class="help_btn" onclick="toggle_help()">?</button>
     <div class="overlay center" id="help_overlay">
