@@ -193,7 +193,7 @@ export async function editGroupNumSet() {
     let from = parseInt(document.getElementById('numset_edit_from').value);
     let to = parseInt(document.getElementById('numset_edit_to').value);
 
-    if (name == '' || from < 1 || to < from) return;
+    if (name == '' || !from || from < 1 || to < from) return;
     
     const doc_ref = doc(db, 'other', 'group_nr');
     const doc_snap = await getDoc(doc_ref);
@@ -229,6 +229,7 @@ export async function editMembers(group_nr, with_numset=false) {
 
     const coll_ref = collection(db, 'groups');
 
+    //* Update existing group
     if (group_nr != '') {
         const doc_ref = doc(coll_ref, group_nr.toString());
         const doc_snap = await getDoc(doc_ref);
@@ -247,11 +248,13 @@ export async function editMembers(group_nr, with_numset=false) {
         }
     }
 
+    //* New group
     let from = 0; // 1 less than lowes possible nr
     let to = -1; // -1: no hight cap
 
+    let numset_key = '';
     if (with_numset) {
-        let numset_key = document.getElementById('edit_group_choose_numset_select').value;
+        numset_key = document.getElementById('edit_group_choose_numset_select').value;
 
         const doc_ref = doc(db, 'other', 'group_nr');
         const doc_snap = await getDoc(doc_ref);
@@ -259,7 +262,7 @@ export async function editMembers(group_nr, with_numset=false) {
         if (doc_snap.exists()) {
             let this_set = doc_snap.data().sets[numset_key];
             from = this_set[0] - 1;
-            to = this_set[1];
+            if (this_set[1] && this_set[1] > 0) to = this_set[1];
         }
     }
 
@@ -267,13 +270,17 @@ export async function editMembers(group_nr, with_numset=false) {
     let doc_snap
     do {
         current_nr ++;
-        if (current_nr > to) return 0; //TODO Add note in HTML asking to change number set
+        if (to > 0 && current_nr > to) {
+            console.warn('No available group number.')
+            return 0; //TODO Add note in HTML asking to change number set
+        }
         
         doc_snap = await getDoc( doc(coll_ref, current_nr.toString()) );
     } while (doc_snap.exists());
 
     await setDoc( doc(coll_ref, current_nr.toString()), {
         members: names_arr,
+        numberset: numset_key,
         visited_posts: {}
     });
 
@@ -349,5 +356,118 @@ export async function getAllPosts() {
     });
 
     return doc_info;
+}
+
+
+
+
+
+
+export async function setExportDataGroups() {
+    let cont = document.getElementById('result_group_export_table');
+
+    let html = `
+    <tr>
+        <th>Gruppe</th>
+        <th>Trinn</th>
+        <th>Starttid</th>
+        <th>Sluttid</th>
+        <th>Total tid</th>
+        <th>Ant. besvarte poster</th>
+        <th>Rette</th>
+        <th>Feil</th>
+    </tr>`;
+
+    const coll_ref = collection(db, 'groups');
+    const query_snap = await getDocs(coll_ref);
+
+    let data, correct, wrong, grade;
+    query_snap.forEach((doc) => {
+        data = doc.data();
+
+        correct = 0; wrong = 0;
+        for (const visited of Object.values(data.visited_posts)) {
+            if (visited.status == 'riktig') correct++;
+            else if (visited.status == 'feil') wrong++;
+        }
+
+        switch (data.numberset) {
+            case '8. klasse':
+                grade = '8';
+                break;
+
+            case '9. klasse':
+                grade = '9';
+                break;
+                
+            case '10. klasse':
+                grade = '10';
+                break;
+        
+            default:
+                grade = '';
+                break;
+        }
+
+        html += `
+        <tr>
+            <td>${doc.id}</td>
+            <td>${grade}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>${correct+wrong}</td>
+            <td>${correct}</td>
+            <td>${wrong}</td>
+        </tr>`;
+    });
+
+    cont.innerHTML = html;
+}
+
+
+export async function setExportDataIndividual() {
+    let cont = document.getElementById('result_individual_export_table');
+    
+    let html = `
+    <tr>
+        <th>Navn</th>
+        <th>Klasse</th>
+        <th>Gruppe</th>
+        <th>Ant. besvarte poster</th>
+        <th>Rette</th>
+        <th>Feil</th>
+    </tr>`;
+
+    const coll_ref = collection(db, 'groups');
+    const query_snap = await getDocs(coll_ref);
+
+    let data, correct, wrong, namelist;
+    query_snap.forEach((doc) => {
+        data = doc.data();
+
+        for (const namec of data.members) {
+            
+            correct = 0; wrong = 0;
+            for (const visited of Object.values(data.visited_posts)) {
+                if (visited.status == 'riktig' && visited.attendance.includes(namec)) correct++;
+                else if (visited.status == 'feil' && visited.attendance.includes(namec)) wrong++;
+            }
+
+            namelist = namec.split(';');
+
+            html += `
+            <tr>
+                <td>${namelist[0]}</td>
+                <td>${namelist[1] ? namelist[1] : ''}</td>
+                <td>${doc.id}</td>
+                <td>${correct+wrong}</td>
+                <td>${correct}</td>
+                <td>${wrong}</td>
+            </tr>`;
+        }
+    });
+
+    cont.innerHTML = html;
 }
 

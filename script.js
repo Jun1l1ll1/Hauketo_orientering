@@ -107,10 +107,12 @@ function show_numsets(numsets) {
     for (const name of keys_sorted) {
         from = numsets[name][0];
         to = numsets[name][1];
-        html += `<li><button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to})</button></li>`;
+        html += `<li><button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to ? to : ''})</button></li>`;
     }
     
-    html += '<li><button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button></li>';
+    // html += `<li><button onclick="open_edit_numset('Ekstra', 76)" class="small">Ekstra (76-)</button></li>`;
+    //? Allow the creation of more
+    // html += '<li><button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button></li>';
 
     document.getElementById('all_numsets_ul').innerHTML = html;
 
@@ -165,7 +167,7 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
         
         let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
         for (const numset of keys_sorted) {
-            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1]})</option>`
+            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
         }
 
         html += `</select>
@@ -342,7 +344,7 @@ function show_members(members, attendance) {
         container.innerHTML += `
         <div>
             <input onclick="module.updateMemberAttendance()" id="mbr_${member}" type="checkbox" ${attendance.includes(member) ? 'checked' : ''}>
-            <label for="mbr_${member}">${member}</label>
+            <label for="mbr_${member}">${member.replace(/;(.*)$/g, ' <span class="ct_obscure">$1</span>')}</label>
         </div>
         `
     }
