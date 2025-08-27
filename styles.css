@@ -244,6 +244,18 @@ p:has(~.big_inp) {
     display: none;
 }
 
+.timer_btn {
+    position: absolute;
+    top: calc(10px + 2rem);
+    left: 10px;
+    background-color: rgba(0,0,0,0);
+    color: var(--text_c_obscure);
+}
+
+#timer_btn:not(:checked) ~ #timer_overlay {
+    display: none;
+}
+
 
 
 .admin_cont {
