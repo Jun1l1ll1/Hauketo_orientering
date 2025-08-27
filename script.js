@@ -99,15 +99,82 @@ function toggle_help() {
 
 
 
+function show_numsets(numsets) {
+    let html = '';
+    let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
+    
+    let from, to;
+    for (const name of keys_sorted) {
+        from = numsets[name][0];
+        to = numsets[name][1];
+        html += `<li><button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to})</button></li>`;
+    }
+    
+    html += '<li><button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button></li>';
+
+    document.getElementById('all_numsets_ul').innerHTML = html;
+
+    let cont = document.getElementById('numset_cont');
+    if (cont.classList.contains('hide')) cont.classList.remove('hide');
+}
+
+function open_edit_numset(setname = '', from = -1, to = -1) {
+    let cont = document.getElementById('numset_edit_div');
 
 
-function open_edit_group_members(group_nr='', members=null) {
+    let name_inp = document.getElementById('numset_edit_name');
+    if (setname != '') name_inp.value = setname;
+    else name_inp.value = '';
+
+    let from_inp = document.getElementById('numset_edit_from');
+    if (from != -1) from_inp.value = from;
+    else from_inp.value = '';
+    
+    let to_inp = document.getElementById('numset_edit_to');
+    if (to != -1) to_inp.value = to;
+    else to_inp.value = '';
+
+    if (cont.classList.contains('hide')) {
+        cont.classList.remove('hide');
+    }
+}
+
+function close_edit_numset() {
+    let cont = document.getElementById('numset_edit_div');
+
+    if (!cont.classList.contains('hide')) {
+        cont.classList.add('hide');
+    }
+}
+
+
+function open_edit_group_members(numsets, group_nr='', members=null, numset_key='') {
+    document.getElementById('numset_cont').classList.add('hide');
+    document.getElementById('new_post_or_group_btn').classList.add('hide');
+
     let cont = document.getElementById('add_post_cont');
 
-    let html = `
-        <h4>${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4> <br/>
+    let html = `<h4 class="edit_group_title">${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4>`
+
+    if (group_nr == '') {
+        html += `
+            <div class="edit_group_choose_numset_cont">
+                <p>Velg nummersett:</p>
+                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select">`
+        ;
+        
+        let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
+        for (const numset of keys_sorted) {
+            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1]})</option>`
+        }
+
+        html += `</select>
+            </div>`
+        ;
+    }
+    
+    html += `
         <p>Rediger og legg til medlemmer:</p>
-        <!--<input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C." value="${group_nr == '' ? '' : members}">-->
         <ul class="edit_group_member_ul" id="edit_group_member_ul">`
     ;
 
@@ -116,19 +183,20 @@ function open_edit_group_members(group_nr='', members=null) {
         for (let i = 0; i < members_list.length; i++) {
             let member = members_list[i];
             let ml = member.split(';');
-            html += `<li class="edit_group_member_li">
+            html += `
+            <li class="edit_group_member_li">
                 <input class="edit_member_inp edit_member_name_inp" type="text" name="edt_${member}_name" id="edt_${member}_name" value="${ml[0]}">
                 <input class="edit_member_inp edit_member_class_inp" type="text" name="edt_${member}_class" id="edt_${member}_class" placeholder="Klasse" value="${ml[1] == undefined ? '' : ml[1]}">
-                <button onclick="open_edit_group_members('${group_nr}', '${members_list.toSpliced(i, 1).join(',')}')" class="edit_member_inp remove_btn small">Fjern</button>
-            </li>`; //TODO fix remove btn
+                <button onclick="module.openEditGroup('${group_nr}', '${members_list.toSpliced(i, 1).join(',')}')" class="edit_member_inp remove_btn small">Fjern</button>
+            </li>`;
         }
     }
     
     html += `
-            <li> <button onclick="add_new_group_member('${group_nr}')" class="small add_member_btn">+</button> </li>
+            <li> <button onclick="add_new_group_member(module, '${group_nr}')" class="small c_check">+</button> </li>
         </ul>
 
-        <button onclick="module.editMembers('${group_nr}')" class="add_btn small">Godkjenn</button>
+        <button onclick="module.editMembers('${group_nr}', ${group_nr == ''})" class="f_bold c_check small">Godkjenn</button>
         <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
     `;
     cont.innerHTML = html;
@@ -137,10 +205,14 @@ function open_edit_group_members(group_nr='', members=null) {
         cont.classList.remove('hide');
     }
 }
-function add_new_group_member(group_nr) {
+function add_new_group_member(module, group_nr) {
     let members = members_inps_to_array();
     let new_members = members.length == 0 ? '' : members.join(',') + ',';
-    open_edit_group_members(group_nr, new_members);
+
+    let numset_key = '';
+    if (group_nr == '') numset_key = document.getElementById('edit_group_choose_numset_select').value;
+
+    module.openEditGroup(group_nr, new_members, numset_key);
 }
 
 function members_inps_to_array() {
@@ -164,6 +236,9 @@ function close_edit_group_members() {
         cont.classList.add('hide');
     }
     cont.innerHTML = '';
+
+    document.getElementById('numset_cont').classList.remove('hide');
+    document.getElementById('new_post_or_group_btn').classList.remove('hide');
 }
 
 function show_all_groups(groups) {
@@ -174,10 +249,11 @@ function show_all_groups(groups) {
 
     let html = '';
 
+    groups.sort((a, b) => a.nr - b.nr);
     for (const group of groups) {
         html += `
         <li class="edit_existing_li">
-            <button onclick="open_edit_group_members('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
+            <button onclick="module.openEditGroup('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
             <button onclick="module.removeDoc('groups', '${group.nr}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }

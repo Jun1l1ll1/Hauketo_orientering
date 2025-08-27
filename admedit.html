@@ -17,24 +17,36 @@
     <div class="center_vertical">
         <div class="admin_cont">
 
-            <button id="new_post_or_group_btn" onclick="open_edit_group_members()" class="add_btn">Legg til ny</button><br/><br/>
+            <div id="numset_cont" class="container hide"> <!-- Shown in show_numsets() func -->
+                <h4>Nummersett</h4>
+                <ul id="all_numsets_ul" class="numset_ul">
+                    <!-- Info added in show_numsets() func -->
+                </ul>
 
-            <div id="add_post_cont" class="container add_post_cont hide">
-                <!-- <h4>Legg til ny</h4> <br/>
-                <p>Skriv inn navn separert med komma:</p>
-                <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C.">
-                <button class="add_btn small">Godkjenn</button>
-                <button class="cancel_btn small">Cancel</button> -->
+                <div id="numset_edit_div" class="numset_edit_div hide">
+                    <!--TODO Add a delete option -->
+                    <input id="numset_edit_name" placeholder="Set-navn" type="text">
+                    <input id="numset_edit_from" class="numset_limit_inp" placeholder="Fra" min="1" type="number">
+                    <input id="numset_edit_to" class="numset_limit_inp" placeholder="Til" min="1" type="number">
+                    <button onclick="module.editGroupNumSet()" class="small c_check">✔</button>
+                    <button onclick="close_edit_numset()" class="small ct_obscure">✖</button>
+                </div>
             </div>
 
-            <!-- <div>
+            <button id="new_post_or_group_btn" class="f_bold c_check">Legg til ny</button>
+
+            <div id="add_post_cont" class="container add_post_cont hide">
+                <!-- Added when user clicks new_post_or_group_btn using open_edit_group_members() -->
+            </div>
+
+            <!-- <div> <!--? Is this something?? I don't remember
                 <p>Status kommer her...</p>
                 <br/>
             </div> -->
 
             <div class="container">
                 <h4 id="edit_existing_title"></h4>
-                <ul class="edit_list" id="edit_list"> <!--TODO Give function to remove button -->
+                <ul class="edit_list" id="edit_list">
                     <li class="edit_existing_li">Vent litt...</li>
                     <!-- <li class="edit_existing_li"> <button onclick="open_edit_group_members('0')" class="small">Gruppe 0 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
                     <li class="edit_existing_li"> <button onclick="open_edit_group_members('1')" class="small">Gruppe 1 <span>- Navn N. N., Navne N.</span></button> <button class="remove_btn small">Fjern</button></li>
@@ -53,10 +65,12 @@
 </script>
 
 <script type="module">
-    import { verifyACode, editMembers, removeDoc, newPost, getAllGroups, getAllPosts } from "./db.js";
+    import { verifyACode, editMembers, removeDoc, newPost, getAllGroups, getAllPosts, getAllGroupNumSets, editGroupNumSet, openEditGroup } from "./db.js";
     module.editMembers = editMembers;
     module.removeDoc = removeDoc;
     module.newPost = newPost;
+    module.editGroupNumSet = editGroupNumSet;
+    module.openEditGroup = openEditGroup;
 
     const acode = get_cookie("admincode");
 
@@ -66,10 +80,14 @@
     }
 
     if (get_edit_type() == 'groups') {
-        document.getElementById('new_post_or_group_btn').setAttribute('onclick','open_edit_group_members()');
+        document.getElementById('new_post_or_group_btn').setAttribute('onclick','module.openEditGroup()');
         document.getElementById('edit_existing_title').innerText = 'Rediger eksisterende grupper';
         let all_groups = await getAllGroups();
         show_all_groups(all_groups);
+
+        let all_numsets = await getAllGroupNumSets();
+        show_numsets(all_numsets);
+
     } else {
         document.getElementById('new_post_or_group_btn').setAttribute('onclick','module.newPost()');
         document.getElementById('edit_existing_title').innerText = 'Oversikt over eksisterende poster';

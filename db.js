@@ -188,7 +188,36 @@ function _generateCode(len = 4) {
 }
 
 
-export async function editMembers(group_nr) {
+export async function editGroupNumSet() {
+    let name = document.getElementById('numset_edit_name').value;
+    let from = parseInt(document.getElementById('numset_edit_from').value);
+    let to = parseInt(document.getElementById('numset_edit_to').value);
+
+    if (name == '' || from < 1 || to < from) return;
+    
+    const doc_ref = doc(db, 'other', 'group_nr');
+    const doc_snap = await getDoc(doc_ref);
+    let n_sets;
+    if (doc_snap.exists()) {
+        n_sets = doc_snap.data().sets;
+        n_sets[name] = [from, to];
+
+        await updateDoc(doc_ref, {
+            sets: n_sets
+        });
+    }
+
+    close_edit_numset();
+    show_numsets(n_sets);
+}
+
+
+export async function openEditGroup(group_nr='', members=null, numset_key='') {
+    let numsets = await getAllGroupNumSets();
+    open_edit_group_members(numsets, group_nr, members, numset_key);
+}
+
+export async function editMembers(group_nr, with_numset=false) {
     const names_list = members_inps_to_array();
     if (names_list.length == 0) { return 0 }
 
@@ -218,23 +247,32 @@ export async function editMembers(group_nr) {
         }
     }
 
-    let available_id = -1;
-    let last_id = 0;
+    let from = 0; // 1 less than lowes possible nr
+    let to = -1; // -1: no hight cap
 
-    const query_snapshot = await getDocs(coll_ref);
-    query_snapshot.forEach((doc) => {
-        if (available_id == -1) { // Only check if none is found yet
-            if (last_id+1 < parseInt(doc.id)) { // An ID was skipped
-                available_id = last_id+1;
-            }
+    if (with_numset) {
+        let numset_key = document.getElementById('edit_group_choose_numset_select').value;
+
+        const doc_ref = doc(db, 'other', 'group_nr');
+        const doc_snap = await getDoc(doc_ref);
+
+        if (doc_snap.exists()) {
+            let this_set = doc_snap.data().sets[numset_key];
+            from = this_set[0] - 1;
+            to = this_set[1];
         }
-        last_id = parseInt(doc.id);
-    });
-    if (available_id == -1) { // If no spaces must be filled
-        available_id = last_id+1;
     }
 
-    await setDoc( doc(coll_ref, available_id.toString()), {
+    let current_nr = from;
+    let doc_snap
+    do {
+        current_nr ++;
+        if (current_nr > to) return 0; //TODO Add note in HTML asking to change number set
+        
+        doc_snap = await getDoc( doc(coll_ref, current_nr.toString()) );
+    } while (doc_snap.exists());
+
+    await setDoc( doc(coll_ref, current_nr.toString()), {
         members: names_arr,
         visited_posts: {}
     });
@@ -243,6 +281,8 @@ export async function editMembers(group_nr) {
 
     let groups = await getAllGroups();
     show_all_groups(groups);
+
+    return 1;
 }
 
 export async function removeDoc(coll, document, update=false) {
@@ -262,11 +302,22 @@ export async function removeDoc(coll, document, update=false) {
             default:
                 break;
         }
-        
     }
 }
 
 
+
+export async function getAllGroupNumSets() {
+
+    const doc_ref = doc(db, 'other', 'group_nr');
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        return doc_snap.data().sets;
+    }
+
+    return
+}
 
 export async function getAllGroups() {
 

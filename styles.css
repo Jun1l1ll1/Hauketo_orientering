@@ -65,6 +65,24 @@ h1, h2, h3, h4, h5, p {
 
 
 
+.c_check {
+    background-color: var(--check_light);
+    color: var(--check_dark);
+}
+.c_cancel {
+    background-color: var(--cancel_light);
+    color: var(--cancel_dark);
+}
+.ct_obscure {
+    color: var(--text_c_obscure);
+}
+
+.f_bold {
+    font-weight: bold;
+}
+
+
+
 
 .full {
     width: 100vw;
@@ -260,11 +278,6 @@ p:has(~.big_inp) {
 
 
 
-.add_btn {
-    background-color: var(--check_light);
-    color: var(--check_dark);
-    font-weight: bold;
-}
 
 .cancel_btn {
     color: var(--text_c_obscure);
@@ -290,6 +303,57 @@ p:has(~.big_inp) {
 }
 
 
+.numset_ul {
+    padding: 0px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+
+    >li {
+        display: inline;
+        margin: 0px 5px;
+        font-size: 1rem;
+        background-color: var(--inp_color);
+    }
+}
+
+.numset_edit_div {
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+.numset_limit_inp {
+    width: 3rem;
+}
+
+
+
+#new_post_or_group_btn {
+    margin-bottom: 20px;
+}
+
+
+
+.edit_group_title {
+    margin-bottom: 20px;
+}
+
+.edit_group_choose_numset_cont {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+
+    >p {
+        margin-right: 10px;
+    }
+    >select {
+        background-color: var(--inp_color);
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        padding: 5px;
+    }
+}
+
 .edit_group_member_ul {
     list-style-type: none;
     >li {
@@ -306,15 +370,11 @@ p:has(~.big_inp) {
     }
 }
 
-.add_member_btn {
-    background-color: var(--check_light);
-    color: var(--check_dark);
-}
-
 
 .edit_list {
     list-style-type: none;
     margin: 0;
+    padding: 0;
     font-size: 1rem;
 }
 
@@ -333,7 +393,6 @@ p:has(~.big_inp) {
 
 
 
-
 .header {
     display: flex;
     width: 100vw;
@@ -348,6 +407,8 @@ p:has(~.big_inp) {
         padding: 0px;
     }
 }
+
+
 
 
 .members_cont {
