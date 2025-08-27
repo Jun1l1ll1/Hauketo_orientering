@@ -175,7 +175,6 @@ function show_all_groups(groups) {
     let html = '';
 
     for (const group of groups) {
-        console.log(group.names)
         html += `
         <li class="edit_existing_li">
             <button onclick="open_edit_group_members('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
@@ -200,7 +199,7 @@ function show_all_posts(posts) {
         html += `
         <li class="edit_existing_li">
             Post ${post.nr} <span>- Kode: ${post.code}</span>
-            <button onclick="module.removeDoc('posts', '${post.code}')" class="remove_btn small">Fjern</button>
+            <button onclick="module.removeDoc('posts', '${post.code}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }
 

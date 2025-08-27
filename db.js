@@ -148,26 +148,32 @@ export async function newPost() {
 
     const coll_ref = collection(db, 'posts');
 
-    // Find first available post number
-    let available_nr = -1;
-    let last_nr = 0;
-
+    let post_nrs = [];
     const query_snapshot = await getDocs(coll_ref);
     query_snapshot.forEach((doc) => {
-        if (available_nr == -1) { // Only check if none is found yet
-            if (last_nr+1 < parseInt(doc.data().post_nr)) { // A nr was skipped
-                available_nr = last_nr+1;
+        post_nrs.push(parseInt(doc.data().post_nr));
+    });
+
+    let new_nr = -1;
+
+    post_nrs.sort();
+    //* Asumes post numbers start on 1
+    if (post_nrs[post_nrs.length-1] == post_nrs.length) new_nr = post_nrs.length+1;
+    else {
+        for (let i = 0; i < post_nrs.length; i++) {
+            if (post_nrs[i] != i+1) {
+                new_nr = i+1;
+                break;
             }
         }
-        last_nr = parseInt(doc.data().post_nr);
-    });
-    if (available_nr == -1) { // If no spaces must be filled
-        available_nr = last_nr+1;
     }
 
     await setDoc( doc(coll_ref, new_code), {
-        post_nr: available_nr
+        post_nr: new_nr
     });
+
+    let all_posts = await getAllPosts();
+    show_all_posts(all_posts);
 }
 
 function _generateCode(len = 4) {
@@ -235,8 +241,8 @@ export async function editMembers(group_nr) {
 
     close_edit_group_members();
 
-    let groups = await getAllGroups()
-    show_all_groups(groups)
+    let groups = await getAllGroups();
+    show_all_groups(groups);
 }
 
 export async function removeDoc(coll, document, update=false) {
@@ -244,9 +250,19 @@ export async function removeDoc(coll, document, update=false) {
     await deleteDoc(doc(db, coll, document));
 
     if (update) {
-        //TODO make to fit posts too
-        let groups = await getAllGroups()
-        show_all_groups(groups)
+        switch (coll) {
+            case 'groups':
+                show_all_groups( await getAllGroups() );
+                break;
+            
+            case 'posts':
+                show_all_posts( await getAllPosts() );
+                break;
+        
+            default:
+                break;
+        }
+        
     }
 }
 
