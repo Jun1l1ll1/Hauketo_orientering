@@ -183,10 +183,9 @@ function _generateCode(len = 4) {
 
 
 export async function editMembers(group_nr) {
-    const names = document.getElementById('add_names_inp').value;
-    if (names == '') { return 0 }
+    const names_list = members_inps_to_array();
+    if (names_list.length == 0) { return 0 }
 
-    const names_list = names.split(',');
     let names_arr = [];
     names_list.forEach(e => {
         let te = e.trim();
@@ -205,6 +204,10 @@ export async function editMembers(group_nr) {
             });
 
             close_edit_group_members();
+
+            let groups = await getAllGroups()
+            show_all_groups(groups)
+
             return 1;
         }
     }
@@ -231,11 +234,20 @@ export async function editMembers(group_nr) {
     });
 
     close_edit_group_members();
+
+    let groups = await getAllGroups()
+    show_all_groups(groups)
 }
 
-export async function removeDoc(coll, document) {
+export async function removeDoc(coll, document, update=false) {
 
     await deleteDoc(doc(db, coll, document));
+
+    if (update) {
+        //TODO make to fit posts too
+        let groups = await getAllGroups()
+        show_all_groups(groups)
+    }
 }
 
 

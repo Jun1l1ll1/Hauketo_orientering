@@ -101,20 +101,60 @@ function toggle_help() {
 
 
 
-function open_edit_group_members(group_nr='', members='') {
+function open_edit_group_members(group_nr='', members=null) {
     let cont = document.getElementById('add_post_cont');
 
-    cont.innerHTML = `
-        <h4>${group_nr == '' ? 'Legg til ny' : 'Rediger post ' + group_nr}</h4> <br/>
-        <p>Skriv inn navn separert med komma:</p>
-        <input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C." value="${group_nr == '' ? '' : members}">
+    let html = `
+        <h4>${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4> <br/>
+        <p>Rediger og legg til medlemmer:</p>
+        <!--<input class="small" type="text" name="add_names_inp" id="add_names_inp" placeholder="Eksempel A., Navn B. C." value="${group_nr == '' ? '' : members}">-->
+        <ul class="edit_group_member_ul" id="edit_group_member_ul">`
+    ;
+
+    if (members != null) {
+        let members_list = members.split(',');
+        for (let i = 0; i < members_list.length; i++) {
+            let member = members_list[i];
+            let ml = member.split(';');
+            html += `<li class="edit_group_member_li">
+                <input class="edit_member_inp edit_member_name_inp" type="text" name="edt_${member}_name" id="edt_${member}_name" value="${ml[0]}">
+                <input class="edit_member_inp edit_member_class_inp" type="text" name="edt_${member}_class" id="edt_${member}_class" placeholder="Klasse" value="${ml[1] == undefined ? '' : ml[1]}">
+                <button onclick="open_edit_group_members('${group_nr}', '${members_list.toSpliced(i, 1).join(',')}')" class="edit_member_inp remove_btn small">Fjern</button>
+            </li>`; //TODO fix remove btn
+        }
+    }
+    
+    html += `
+            <li> <button onclick="add_new_group_member('${group_nr}')" class="small add_member_btn">+</button> </li>
+        </ul>
+
         <button onclick="module.editMembers('${group_nr}')" class="add_btn small">Godkjenn</button>
         <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
     `;
+    cont.innerHTML = html;
 
     if (cont.classList.contains('hide')) {
         cont.classList.remove('hide');
     }
+}
+function add_new_group_member(group_nr) {
+    let members = members_inps_to_array();
+    let new_members = members.length == 0 ? '' : members.join(',') + ',';
+    open_edit_group_members(group_nr, new_members);
+}
+
+function members_inps_to_array() {
+    let members = [];
+    for (const li of document.getElementsByClassName('edit_group_member_li')) {
+        let name = li.getElementsByClassName('edit_member_name_inp')[0].value;
+        if (name == '') continue;
+
+        let clss = li.getElementsByClassName('edit_member_class_inp')[0].value;
+
+        let new_member = clss == '' ? name : name + ';' + clss;
+        members.push(new_member);
+    }
+    return members;
 }
 
 function close_edit_group_members() {
@@ -135,10 +175,11 @@ function show_all_groups(groups) {
     let html = '';
 
     for (const group of groups) {
+        console.log(group.names)
         html += `
         <li class="edit_existing_li">
-            <button onclick="open_edit_group_members('${group.nr}', '${group.names.join(", ")}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(", ")}</span></button>
-            <button onclick="module.removeDoc('groups', '${group.nr}')" class="remove_btn small">Fjern</button>
+            <button onclick="open_edit_group_members('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
+            <button onclick="module.removeDoc('groups', '${group.nr}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }
 

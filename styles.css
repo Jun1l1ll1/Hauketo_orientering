@@ -289,6 +289,29 @@ p:has(~.big_inp) {
     }
 }
 
+
+.edit_group_member_ul {
+    list-style-type: none;
+    >li {
+        margin: 10px 0px;
+    }
+}
+
+.edit_member_inp {
+    font-size: 1rem;
+    padding: 5px;
+
+    &.edit_member_class_inp {
+        width: 3rem;
+    }
+}
+
+.add_member_btn {
+    background-color: var(--check_light);
+    color: var(--check_dark);
+}
+
+
 .edit_list {
     list-style-type: none;
     margin: 0;
