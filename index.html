@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nb">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +7,52 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="center full">
+    <!--START Ikke innlogget -->
+    <div id="login_cont" class="center full hide">
+        <div>
+            <p>Du har ikke riktig innloggingslenke...</p>
+            <p>Kontakt de ansvarlige.</p>
+        </div>
+        <br/>
+
+            <p>eller...</p>
+
+        <br/>
+        <div>
+            <p>Bruker</p>
+            <input type="text" name="user_login_inp" id="user_login_inp" placeholder="xxx.login" autocomplete="off">
+        </div>
+        <div>
+            <p>Passord</p>
+            <input type="password" name="pword_login_inp" id="pword_login_inp" placeholder="******" autocomplete="off">
+        </div>
+        <button class="big_confirm_btn" onclick="module.index_auth('login')">Logg inn</button>
+        <p id="login_err_note" class="hide" style="color: var(--cancel_light);">Feil bruker eller passord.</p>
+        <p id="login_empty_note" class="hide" style="color: var(--cancel_light);">Skriv inn bruker og passord.</p>
+    </div>
+    <!--SLUTT Ikke innlogget -->
+
+    <!--*START Postkode -->
+    <div id="postcode_cont" class="center full">
         <div>
             <p>Postkode</p>
             <input class="big_inp" type="text" name="code_inp" id="code_inp" placeholder="XXXX" autocomplete="off">
         </div>
         <button class="big_confirm_btn" onclick="confirm_postcode()">Bruk</button>
     </div>
+    <!--*SLUTT Postkode -->
     
-    <!--START Admin knapp og overlay -->
+    <!--START Extra knapper -->
     <label onclick="confirm_admincode()" for="admin_btn" class="admin_btn">Admin</label>
     <input class="hide" id="admin_btn" type="checkbox"></input>
 
+    <label onclick="" for="timer_btn" class="timer_btn">Tidtager</label>
+    <input class="hide" id="timer_btn" type="checkbox"></input>
+    
+    <button class="help_btn" onclick="toggle_help()">?</button>
+    <!--SLUTT Extra knapper -->
+
+    <!--START Admin overlay -->
     <div class="overlay center" id="admin_overlay">
         <div class="center">
             <div>
@@ -29,12 +63,10 @@
         </div>
         <label for="admin_btn" class="btn">Tilbake</label>
     </div>
-    <!--SLUTT Admin knapp og overlay -->
+    <!--SLUTT Admin overlay -->
 
-    <!--START Timer knapp og overlay -->
+    <!--START Timer overlay -->
     <!--TODO Gi funksjonalitet -->
-    <label onclick="" for="timer_btn" class="timer_btn">Tidtager</label>
-    <input class="hide" id="timer_btn" type="checkbox"></input>
 
     <div class="overlay center" id="timer_overlay">
         <div class="center">
@@ -46,10 +78,9 @@
         </div>
         <label for="timer_btn" class="btn">Tilbake</label>
     </div>
-    <!--SLUTT Timer knapp og overlay -->
+    <!--SLUTT Timer overlay -->
 
-    <!--START Hjelp knapp og overlay -->
-    <button class="help_btn" onclick="toggle_help()">?</button>
+    <!--START Hjelp overlay -->
     <div class="overlay center" id="help_overlay">
         <div>
             <p>Postkode er 4-siffret kode utgitt av eventets administratorer.</p>
@@ -57,9 +88,22 @@
         </div>
         <button onclick="toggle_help()">Tilbake</button>
     </div>
-    <!--SLUTT Hjelp knapp og overlay -->
+    <!--SLUTT Hjelp overlay -->
 </body>
 <script src="script.js"></script>
-<script type="module" src="db.js"></script>
-<script> index_loaded(); </script>
+
+<script> 
+    const module = {};
+</script>
+
+<script type="module">
+    import { index_auth } from "./db.js";
+
+    module.index_auth = index_auth;
+
+    index_auth();
+
+    index_loaded();
+
+</script>
 </html>

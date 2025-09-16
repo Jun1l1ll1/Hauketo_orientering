@@ -1,8 +1,20 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
-
-import { doc, getDoc, updateDoc, setDoc, collection, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+import { 
+    getFirestore,
+    doc, 
+    getDoc, 
+    updateDoc, 
+    setDoc, 
+    collection, 
+    getDocs, 
+    deleteDoc
+} from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
 const firebase_config = {
     apiKey: 'AIzaSyBg2kBswm2kRPcSsyPoaBsY-kPjuLiquc4',
@@ -15,9 +27,78 @@ const firebase_config = {
 };
 
 const app = initializeApp(firebase_config);
-const analytics = getAnalytics(app);
 const db = getFirestore(app);
+const analytics = getAnalytics(app);
+let auth = getAuth(app);
 
+
+export async function index_auth(from = 'params') {
+
+    let email, password;
+
+    if (from == 'login') {
+        email = document.getElementById('user_login_inp').value;
+        password = document.getElementById('pword_login_inp').value;
+    } else {
+        const url_params = new URLSearchParams(window.location.search);
+        email = url_params.get('u');
+        password = url_params.get('p');
+    }
+
+   onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Bruker er allerede logget inn 
+            document.getElementById('postcode_cont').classList.remove('hide');
+            document.getElementById('login_cont').classList.add('hide');
+            return;
+
+        } else {
+            // Prøv å logge inn bruker
+            try {
+                if (email == null || password == null) throw 0;
+                user_cred = signInWithEmailAndPassword(auth, email, password);
+            } catch(err) {
+                // Feil innlogging
+                console.warn('Login error,', err);
+                document.getElementById('login_cont').classList.remove('hide');
+                document.getElementById('postcode_cont').classList.add('hide');
+                return;
+            }
+        
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Logget inn!
+                    return;
+                } else {
+                    // Feil oppsto
+                    document.getElementById('login_cont').classList.remove('hide');
+                    document.getElementById('postcode_cont').classList.add('hide');  
+                    return;
+                }
+            });
+        }
+    });
+}
+
+async function authenticate(email, pword) {
+    try {
+        await signInWithEmailAndPassword(auth, email, pword);
+    } catch(err) {
+        return false;
+    }
+
+    await onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Logget inn!
+            return true;
+        } else {
+            // Feil oppsto
+            return false;
+        }
+    });
+    // Func returnerer undefined så lenge signInWithEmailAndPassword ikke feiler
+    // (så onAuthStateChanged sin returverdi ignoreres tror jeg...)
+}
 
 export async function verifyACode(acode) {
     try {
@@ -30,12 +111,32 @@ export async function verifyACode(acode) {
 }
 
 export async function findPost() {
+
+    console.log(auth.currentUser);
+
     const code = get_postcode();
     if (code == 'not_found') return;
 
     const doc_ref = doc(db, 'posts', code);
-    const doc_snap = await getDoc(doc_ref);
+    let doc_snap;
+    try {
+        doc_snap = await getDoc(doc_ref);
+    } catch (err) {
+        if (!auth.currentUser) {const url_params = new URLSearchParams(window.location.search);
+            let email = url_params.get('u');
+            let password = url_params.get('p');
+            if (email == null || password == null) return;
 
+            let auth = await authenticate(email, password);
+            if (auth == false) return;
+
+            doc_snap = await getDoc(doc_ref);
+        } else {
+            return;
+        }
+    }
+
+    console.log(auth.currentUser);
 
     if (doc_snap.exists()) {
         return doc_snap.data();
