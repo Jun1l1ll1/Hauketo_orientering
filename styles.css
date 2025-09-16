@@ -223,8 +223,7 @@ p:has(~.big_inp) {
 
     background-color: var(--check_light);
     color: var(--check_dark);
-    width: 5rem;
-    height: 3rem;
+    padding: 0.6rem 0.9rem;
 }
 
 
