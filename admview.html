@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hauketo orientering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <button class="leave_btn" onclick="exit('admincode')">Logg ut</button>
+
+    <div class="header">
+        <button class="back_btn" onclick="back('admin')">< Tilbake</button>
+    </div>
+    
+    <div class="center_vertical">
+        <div class="admin_cont">
+
+            <div class="container">
+                <h4 id="overview_title">Oversikt over gruppene</h4>
+                <p class="ct_obscure">Grå - Ubesvart</p>
+                <p class="ct_check">Grønn - Riktig svar</p>
+                <p class="ct_cancel">Rød - Feil svar</p>
+                <br/>
+
+                <table id="overview_table" class="overview_table">
+                    <!-- Info is added in show_group_overview in script.js -->
+                </table>
+            </div>
+
+        </div>
+    </div>
+    
+</body>
+<script src="script.js"></script>
+
+<script> 
+    const module = {};
+</script>
+
+<script type="module">
+    import { verifyACode, getAllGroups, getAllPosts } from "./db.js";
+
+    const acode = get_cookie("admincode");
+
+    const correct = await verifyACode(acode);
+    if (!correct) {
+        exit("admincode");
+    }
+
+    // if (get_edit_type() == 'groups') {
+        let all_groups = await getAllGroups();
+        let all_posts = await getAllPosts();
+        show_group_overview(all_groups, all_posts);
+
+    // } else {
+    //     let all_posts = await getAllPosts();
+    // }
+
+</script>
+</html>

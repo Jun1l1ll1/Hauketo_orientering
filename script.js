@@ -283,6 +283,35 @@ function show_all_posts(posts) {
 
 
 
+function show_group_overview(groups, posts) {
+    let html = '<tr> <th></th>';
+    
+    for (const post of posts) {
+        html += `<th>Post ${post.nr}</th>`;
+    }
+    html += '</tr>';
+    
+    for (const g of groups) {
+        html += `
+        <tr>
+            <th class="tooltip">Gruppe ${g.nr} <span class="tooltiptext">${g.grade} - ${g.names.join(', ')}</span></th>
+        `;
+        for (const post of posts) {
+            html += `<td style="background-color: ${
+                g.visited[post.nr] == 'riktig' ? 'var(--check_light)' 
+                : g.visited[post.nr] == 'feil' ? 'var(--cancel_light)' 
+                : 'var(--inp_color);'
+            };"></td>`;
+        }
+        html += '</tr>';
+    }
+    
+    document.getElementById('overview_table').innerHTML = html;
+}
+
+
+
+
 
 
 function exit(name='postcode') {

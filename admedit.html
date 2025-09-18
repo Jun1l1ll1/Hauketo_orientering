@@ -11,7 +11,7 @@
     <button class="leave_btn" onclick="exit('admincode')">Logg ut</button>
 
     <div class="header">
-        <button class="back_btn" onclick="back('admin')">< Til oversikt</button>
+        <button class="back_btn" onclick="back('admin')">< Tilbake</button>
     </div>
     
     <div class="center_vertical">
@@ -38,11 +38,6 @@
             <div id="add_post_cont" class="container add_post_cont hide">
                 <!-- Added when user clicks new_post_or_group_btn using open_edit_group_members() -->
             </div>
-
-            <!-- <div> <!--? Is this something?? I don't remember
-                <p>Status kommer her...</p>
-                <br/>
-            </div> -->
 
             <div class="container">
                 <h4 id="edit_existing_title"></h4>
@@ -95,8 +90,5 @@
         show_all_posts(all_posts);
     }
 
-
-    //TODO Get current members of each group, and fill the list
-    //TODO Do the same for posts if ?edit=posts (but no members)
 </script>
 </html>

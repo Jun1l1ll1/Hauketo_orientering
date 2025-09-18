@@ -434,12 +434,22 @@ export async function getAllGroups() {
 
     let doc_info = [];
     query_snap.forEach((doc) => {
+        let data = doc.data();
+
+        let visit = {};
+        for (const postnr of Object.keys(data.visited_posts)) {
+            visit[postnr] = data.visited_posts[postnr].status
+        }
+
         doc_info.push({
             nr: doc.id,
-            names: doc.data().members,
-            grade: doc.data().numberset
+            names: data.members,
+            grade: data.numberset,
+            visited: visit
         });
     });
+
+    doc_info.sort((a, b) => a.nr - b.nr);
 
     return doc_info;
 }
@@ -456,9 +466,12 @@ export async function getAllPosts() {
             nr: doc.data().post_nr
         });
     });
+    
+    doc_info.sort((a, b) => a.nr - b.nr);
 
     return doc_info;
 }
+
 
 
 
