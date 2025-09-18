@@ -43,6 +43,7 @@ input, button, .btn {
     padding: .5rem;
     width: fit-content;
     height: fit-content;
+    text-decoration: none;
 
     &.small {
         padding: 5px 10px;
@@ -69,10 +70,18 @@ h1, h2, h3, h4, h5, p {
     background-color: var(--check_light);
     color: var(--check_dark);
 }
+.ct_check {
+    color: var(--check_light);
+}
+
 .c_cancel {
     background-color: var(--cancel_light);
     color: var(--cancel_dark);
 }
+.ct_cancel {
+    color: var(--cancel_light);
+}
+
 .ct_obscure {
     color: var(--text_c_obscure);
 }
@@ -146,7 +155,7 @@ h1, h2, h3, h4, h5, p {
     box-sizing: border-box;
     padding: 10px;
 
-    p, label, a {
+    p, label, a:not(.btn) {
         font-size: 1rem;
     }
 }
@@ -164,6 +173,34 @@ h1, h2, h3, h4, h5, p {
     > .g_title {
         color: var(--text_c_obscure);
     }
+}
+
+.flex_space_between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: fit-content;
+  background-color: var(--bg_color);
+  box-shadow: 0 0 10px 0 black;
+  color: var(--text_c_obscure);
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 1rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 
 
@@ -266,6 +303,7 @@ p:has(~.big_inp) {
 }
 
 .edit_btn {
+    display: inline-block;
     color: var(--text_color);
     text-decoration: none;
     height: fit-content;
@@ -314,16 +352,14 @@ p:has(~.big_inp) {
 }
 
 
-.numset_ul {
-    padding: 0px;
-    margin-top: 5px;
-    margin-bottom: 0px;
+.numset_grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 10px;
 
-    >li {
-        display: inline;
-        margin: 0px 5px;
-        font-size: 1rem;
-        background-color: var(--inp_color);
+    > button {
+        width: 100%;
+        font-size: large;
     }
 }
 
@@ -398,6 +434,18 @@ p:has(~.big_inp) {
 
     span {
         color: var(--text_c_obscure);
+    }
+}
+
+
+
+.overview_table {
+    border-spacing: 10px;
+    th {
+        text-align: left;
+    }
+    td {
+        border-radius: 5px;
     }
 }
 

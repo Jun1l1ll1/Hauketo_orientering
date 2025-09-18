@@ -107,14 +107,14 @@ function show_numsets(numsets) {
     for (const name of keys_sorted) {
         from = numsets[name][0];
         to = numsets[name][1];
-        html += `<li><button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to ? to : ''})</button></li>`;
+        html += `<button onclick="open_edit_numset('${name}', ${from}, ${to})" class="small">${name} (${from}-${to ? to : ''})</button>`;
     }
     
-    // html += `<li><button onclick="open_edit_numset('Ekstra', 76)" class="small">Ekstra (76-)</button></li>`;
-    //? Allow the creation of more
-    // html += '<li><button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button></li>';
+    // html += `<button onclick="open_edit_numset('Ekstra', 76)" class="small">Ekstra (76-)</button>`;
+    //? Allow the creation of more?
+    // html += '<button onclick="open_edit_numset()" class="small f_bold ct_obscure">+</button>';
 
-    document.getElementById('all_numsets_ul').innerHTML = html;
+    document.getElementById('all_numsets_grid').innerHTML = html;
 
     let cont = document.getElementById('numset_cont');
     if (cont.classList.contains('hide')) cont.classList.remove('hide');
@@ -188,7 +188,6 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
             html += `
             <li class="edit_group_member_li">
                 <input class="edit_member_inp edit_member_name_inp" type="text" name="edt_${member}_name" id="edt_${member}_name" value="${ml[0]}">
-                <input class="edit_member_inp edit_member_class_inp" type="text" name="edt_${member}_class" id="edt_${member}_class" placeholder="Klasse" value="${ml[1] == undefined ? '' : ml[1]}">
                 <button onclick="module.openEditGroup('${group_nr}', '${members_list.toSpliced(i, 1).join(',')}')" class="edit_member_inp remove_btn small">Fjern</button>
             </li>`;
         }
@@ -223,10 +222,7 @@ function members_inps_to_array() {
         let name = li.getElementsByClassName('edit_member_name_inp')[0].value;
         if (name == '') continue;
 
-        let clss = li.getElementsByClassName('edit_member_class_inp')[0].value;
-
-        let new_member = clss == '' ? name : name + ';' + clss;
-        members.push(new_member);
+        members.push(name);
     }
     return members;
 }
@@ -255,7 +251,7 @@ function show_all_groups(groups) {
     for (const group of groups) {
         html += `
         <li class="edit_existing_li">
-            <button onclick="module.openEditGroup('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>- ${group.names.join(', ').replaceAll(/;(.*?),/g, ' ($1),').replaceAll(/;(.*?)$/g, ' ($1)')}</span></button>
+            <button onclick="module.openEditGroup('${group.nr}', '${group.names}')" class="small">Gruppe ${group.nr} <span>(${group.grade}) - ${group.names.join(', ')}</span></button>
             <button onclick="module.removeDoc('groups', '${group.nr}', true)" class="remove_btn small">Fjern</button>
         </li>`;
     }
@@ -282,6 +278,35 @@ function show_all_posts(posts) {
     }
 
     document.getElementById('edit_list').innerHTML = html;
+}
+
+
+
+
+function show_group_overview(groups, posts) {
+    let html = '<tr> <th></th>';
+    
+    for (const post of posts) {
+        html += `<th>Post ${post.nr}</th>`;
+    }
+    html += '</tr>';
+    
+    for (const g of groups) {
+        html += `
+        <tr>
+            <th class="tooltip">Gruppe ${g.nr} <span class="tooltiptext">${g.grade} - ${g.names.join(', ')}</span></th>
+        `;
+        for (const post of posts) {
+            html += `<td style="background-color: ${
+                g.visited[post.nr] == 'riktig' ? 'var(--check_light)' 
+                : g.visited[post.nr] == 'feil' ? 'var(--cancel_light)' 
+                : 'var(--inp_color);'
+            };"></td>`;
+        }
+        html += '</tr>';
+    }
+    
+    document.getElementById('overview_table').innerHTML = html;
 }
 
 
