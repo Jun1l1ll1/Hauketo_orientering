@@ -314,16 +314,14 @@ p:has(~.big_inp) {
 }
 
 
-.numset_ul {
-    padding: 0px;
-    margin-top: 5px;
-    margin-bottom: 0px;
+.numset_grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 10px;
 
-    >li {
-        display: inline;
-        margin: 0px 5px;
-        font-size: 1rem;
-        background-color: var(--inp_color);
+    > button {
+        width: 100%;
+        font-size: large;
     }
 }
 

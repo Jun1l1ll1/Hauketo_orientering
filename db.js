@@ -436,7 +436,8 @@ export async function getAllGroups() {
     query_snap.forEach((doc) => {
         doc_info.push({
             nr: doc.id,
-            names: doc.data().members
+            names: doc.data().members,
+            grade: doc.data().numberset
         });
     });
 
@@ -547,20 +548,18 @@ export async function setExportDataIndividual() {
     query_snap.forEach((doc) => {
         data = doc.data();
 
-        for (const namec of data.members) {
+        for (const name of data.members) {
             
             correct = 0; wrong = 0;
             for (const visited of Object.values(data.visited_posts)) {
-                if (visited.status == 'riktig' && visited.attendance.includes(namec)) correct++;
-                else if (visited.status == 'feil' && visited.attendance.includes(namec)) wrong++;
+                if (visited.status == 'riktig' && visited.attendance.includes(name)) correct++;
+                else if (visited.status == 'feil' && visited.attendance.includes(name)) wrong++;
             }
-
-            namelist = namec.split(';');
 
             html += `
             <tr>
-                <td>${namelist[0]}</td>
-                <td>${namelist[1] ? namelist[1] : ''}</td>
+                <td>${name}</td>
+                <td>${data.numberset != 'Ekstra' ? data.numberset : ''}</td>
                 <td>${doc.id}</td>
                 <td>${correct+wrong}</td>
                 <td>${correct}</td>
