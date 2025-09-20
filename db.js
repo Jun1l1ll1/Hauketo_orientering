@@ -102,8 +102,22 @@ async function authenticate(email, pword) {
 
 export async function verifyACode(acode) {
     try {
-        const doc_ref = doc(db, 'admin', acode);
+        const doc_ref = doc(db, 'codes', acode);
         const doc_snap = await getDoc(doc_ref);
+        
+        if (doc_snap.data().type != "admincode") return false;
+        return doc_snap.exists();
+    } catch (error) {
+        return false;
+    }
+}
+
+export async function verifyTCode(tcode) {
+    try {
+        const doc_ref = doc(db, 'codes', tcode);
+        const doc_snap = await getDoc(doc_ref);
+        
+        if (doc_snap.data().type != "timercode") return false;
         return doc_snap.exists();
     } catch (error) {
         return false;
@@ -410,6 +424,24 @@ export async function removeDoc(coll, document, update=false) {
             default:
                 break;
         }
+    }
+}
+
+
+
+export async function timer(now) {
+    let chckbx = document.getElementById('timer_start_stop_switch')
+    let edit_stop = chckbx.checked;
+
+    if (edit_stop) {
+        //TODO
+    } else {
+        //TODO
+    }
+
+    if (!edit_stop) {
+        chckbx.checked = true;
+        swap_timer_edit();
     }
 }
 

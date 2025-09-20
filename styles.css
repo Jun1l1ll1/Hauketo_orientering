@@ -10,6 +10,8 @@
     --check_dark: #004550;
     --cancel_light: #DC6464;
     --cancel_dark: #7B0C2C;
+    --yellow_light: #f6c863;
+    --yellow_dark: #a0531c;
 
 }
 
@@ -72,6 +74,11 @@ h1, h2, h3, h4, h5, p {
 }
 .ct_check {
     color: var(--check_light);
+}
+
+.c_yellow {
+    background-color: var(--yellow_light);
+    color: var(--yellow_dark);
 }
 
 .c_cancel {
@@ -205,6 +212,30 @@ h1, h2, h3, h4, h5, p {
 
 
 
+.switch {
+    
+    ~ label {
+        color: var(--text_c_obscure);
+        
+        * {
+            padding: 2px 7px;
+            border-radius: 7px;
+        }
+    }
+    
+    &:not(:checked) ~ label .switch_left {
+        background-color: var(--inp_color);
+        color: var(--text_color);
+    }
+
+    &:checked ~ label .switch_right {
+        background-color: var(--inp_color);
+        color: var(--text_color);
+    }
+}
+
+
+
 #help_overlay {
     display: none;
 }
@@ -236,6 +267,16 @@ h1, h2, h3, h4, h5, p {
     right: 10px;
     background-color: rgba(0,0,0,0);
     color: var(--text_c_obscure);
+}
+
+
+.back_btn {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    background-color: rgba(0,0,0,0);
+    color: var(--text_c_obscure);
+    font-weight: bold;
 }
 
 
@@ -290,6 +331,17 @@ p:has(~.big_inp) {
 
 #timer_btn:not(:checked) ~ #timer_overlay {
     display: none;
+}
+
+
+
+.timer_clock {
+    font-size: 1.5rem;
+}
+
+.timer_start_stop_btn {
+    font-size: 2.5rem;
+    font-weight: bold;
 }
 
 

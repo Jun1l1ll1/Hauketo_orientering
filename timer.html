@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page_title">Tidtager - Hauketo orientering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <button class="leave_btn" onclick="exit('timercode')">Logg ut</button>
+    
+    <button class="back_btn" onclick="home()">< Til start</button>
+
+    <div class="center full">
+        <div>
+            <div style="margin-bottom: 40px;">
+                <p>Gruppenummer</p>
+                <input class="" type="number" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off">
+                <button class="c_check f_bold" onclick="">Bruk</button>
+            </div>
+
+            <div class="center" style="margin-bottom: 20px;">
+                <h3>Gruppe 1</h3>
+            </div>
+
+            <p class="timer_clock hide">Starttid <span id="timer_start">--:--</span></p>
+            <p class="timer_clock hide">Sluttid <span id="timer_stop">--:--</span></p>
+            <br/>
+
+            <div>
+                <input type="checkbox" onclick="swap_timer_edit()" class="switch hide" name="timer_start_stop_switch" id="timer_start_stop_switch">
+                <label for="timer_start_stop_switch">
+                    <span class="switch_left">Sett start</span>
+                    |
+                    <span class="switch_right">Sett stopp</span>
+                </label>
+            </div>
+            <div class="center">
+                <button class="timer_start_stop_btn c_check" id="timer_start_btn" onclick="module.timer(true)">Start nå</button>
+                <button class="timer_start_stop_btn c_cancel hide" id="timer_stop_btn" onclick="module.timer(true)">Stopp nå</button>
+                <div style="margin-top: 20px;">
+                    <input type="time">
+                    <button class="f_bold" onclick="module.timer(false)">Bruk</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--START Hjelp knapp og overlay -->
+    <button class="help_btn" onclick="toggle_help()">?</button>
+    <div class="overlay center" id="help_overlay">
+        <div>
+            <p>-</p>
+            <br/><p>-</p>
+        </div>
+        <button onclick="toggle_help()">Tilbake</button>
+    </div>
+    <!--SLUTT Hjelp knapp og overlay -->
+</body>
+<script src="script.js"></script>
+
+<script> 
+    const module = {};
+</script>
+
+<script type="module">
+    import { verifyTCode, timer } from "./db.js";
+
+    module.timer = timer;
+
+    const tcode = get_cookie("timercode");
+
+    const correct = await verifyTCode(tcode);
+    if (!correct) {
+        exit("timercode");
+    }
+
+</script>
+</html>
