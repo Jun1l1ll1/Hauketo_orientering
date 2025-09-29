@@ -337,6 +337,18 @@ p:has(~.big_inp) {
 
 .timer_clock {
     font-size: 1.5rem;
+    width: 100%;
+    position: relative;
+}
+.timer_remove_time {
+    position: absolute;
+    right: 0;
+    top: .25rem;
+
+    font-size: 1rem;
+    padding: 0;
+    color: var(--cancel_light);
+    background-color: transparent;
 }
 
 .timer_start_stop_btn {

@@ -14,33 +14,36 @@
 
     <div class="center full">
         <div>
-            <div style="margin-bottom: 40px;">
+            <div style="margin-bottom: 60px;">
                 <p>Gruppenummer</p>
-                <input class="" type="number" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off">
-                <button class="c_check f_bold" onclick="">Bruk</button>
+                <input class="" type="number" name="group_inp" id="group_inp" placeholder="XXX" autocomplete="off" min="1">
+                <button class="c_check f_bold" onclick="module.timerGetGroup()">Bruk</button>
+
+                <div class="center timer_hide_when_group" style="margin-top: 20px;">
+                    <p>Skriv inn ett gruppenummer</p>
+                </div>
             </div>
 
             <div class="center" style="margin-bottom: 20px;">
-                <h3>Gruppe 1</h3>
+                <h3 class="timer_show_when_group hide">Gruppe <span id="timer_grnr_span">XXX</span></h3>
             </div>
 
-            <p class="timer_clock hide">Starttid <span id="timer_start">--:--</span></p>
-            <p class="timer_clock hide">Sluttid <span id="timer_stop">--:--</span></p>
-            <br/>
+            <p class="timer_clock hide" id="timer_start">Starttid <span>--:--</span> <button class="timer_remove_time" onclick="module.removeTime('start')">Fjern</button></p>
+            <p class="timer_clock hide" id="timer_stop">Sluttid <span>--:--</span> <button class="timer_remove_time" onclick="module.removeTime('stop')">Fjern</button></p>
 
-            <div>
+            <div class="timer_show_when_group hide" style="margin-top: 60px;">
                 <input type="checkbox" onclick="swap_timer_edit()" class="switch hide" name="timer_start_stop_switch" id="timer_start_stop_switch">
                 <label for="timer_start_stop_switch">
                     <span class="switch_left">Sett start</span>
                     |
                     <span class="switch_right">Sett stopp</span>
                 </label>
-            </div>
-            <div class="center">
+            </div> <br/>
+            <div class="center timer_show_when_group hide">
                 <button class="timer_start_stop_btn c_check" id="timer_start_btn" onclick="module.timer(true)">Start nå</button>
                 <button class="timer_start_stop_btn c_cancel hide" id="timer_stop_btn" onclick="module.timer(true)">Stopp nå</button>
                 <div style="margin-top: 20px;">
-                    <input type="time">
+                    <input type="time" id="timer_custom" name="timer_custom">
                     <button class="f_bold" onclick="module.timer(false)">Bruk</button>
                 </div>
             </div>
@@ -52,8 +55,10 @@
     <button class="help_btn" onclick="toggle_help()">?</button>
     <div class="overlay center" id="help_overlay">
         <div>
-            <p>-</p>
-            <br/><p>-</p>
+            <p>Skriv inn ett gruppenummer og trykk bruk.</p>
+            <br/><p>Deretter kan du legge til start- og slutt-tider til gruppen.</p>
+            <br/><p>Trykk den store nå-knappen for å sette tiden til nåværende tid - eller legg in velgfri tid ved hjelp av det nederste feltet og den tilhørende bruk-knappen.</p>
+            <p>Du kan slette innlagte tider ved å trykke fjern, eller overskrive ved å trykke nå-knappen eller legge inn ny tid nederst.</p>
         </div>
         <button onclick="toggle_help()">Tilbake</button>
     </div>
@@ -66,9 +71,11 @@
 </script>
 
 <script type="module">
-    import { verifyTCode, timer } from "./db.js";
+    import { verifyTCode, timer, timerGetGroup, removeTime } from "./db.js";
 
     module.timer = timer;
+    module.timerGetGroup = timerGetGroup;
+    module.removeTime = removeTime;
 
     const tcode = get_cookie("timercode");
 

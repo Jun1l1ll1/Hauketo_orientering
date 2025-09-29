@@ -418,7 +418,10 @@ function update_slider_taskverifier(post_nr, post_status) {
 }
 
 
-function swap_timer_edit() {
+function swap_timer_edit(set_manually = false, set_to_stop = true) {
+    if (set_manually) {
+        document.getElementById('timer_start_stop_switch').checked = set_to_stop;
+    }
 
     let edit_stop = document.getElementById('timer_start_stop_switch').checked;
 

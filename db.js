@@ -8,7 +8,8 @@ import {
     setDoc, 
     collection, 
     getDocs, 
-    deleteDoc
+    deleteDoc,
+    deleteField
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 import { 
     getAuth, 
@@ -430,18 +431,117 @@ export async function removeDoc(coll, document, update=false) {
 
 
 export async function timer(now) {
-    let chckbx = document.getElementById('timer_start_stop_switch')
+    let group_nr = document.getElementById('timer_grnr_span').innerText;
+    if (group_nr == 'XXX') return;
+
+    let chckbx = document.getElementById('timer_start_stop_switch');
     let edit_stop = chckbx.checked;
 
-    if (edit_stop) {
-        //TODO
+    let date = new Date();
+    let time;
+    if (now) {
+        time = date;
     } else {
-        //TODO
+        let l = document.getElementById('timer_custom').value.split(':');
+        if (l.length != 2) return;
+        time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), l[0], l[1]);
     }
 
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        let d = doc_snap.data();
+        if (edit_stop) {
+            if (d.time_stop) {
+                if (!confirm('Er du sikker på at du vil overskrive nåværende sluttid?')) return;
+            }
+            await updateDoc(doc_ref, {
+                time_stop: time
+            });
+        } else {
+            if (d.time_start) {
+                if (!confirm('Er du sikker på at du vil overskrive nåværende starttid?')) return;
+            }
+            await updateDoc(doc_ref, {
+                time_start: time
+            });
+        }
+    }
+    
     if (!edit_stop) {
-        chckbx.checked = true;
-        swap_timer_edit();
+        swap_timer_edit(true, true);
+    }
+
+    await updateStartAndStopTimer(group_nr)
+}
+
+export async function removeTime(time) {
+    if (!['start', 'stop'].includes(time)) return;
+    
+    let group_nr = document.getElementById('timer_grnr_span').innerText;
+    if (group_nr == 'XXX') return;
+
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        if (time == 'start') {
+            await updateDoc(doc_ref, {
+                time_start: deleteField()
+            });
+        } else {
+            await updateDoc(doc_ref, {
+                time_stop: deleteField()
+            });
+        }
+    }
+
+    await updateStartAndStopTimer(group_nr);
+}
+
+export async function timerGetGroup() {
+    let group_nr = document.getElementById('group_inp').value;
+    if (group_nr == '') return;
+
+    await updateStartAndStopTimer(group_nr);
+
+    for (const elem of document.getElementsByClassName('timer_hide_when_group')) {
+        elem.classList.add('hide');
+    }
+    for (const elem of document.getElementsByClassName('timer_show_when_group')) {
+        elem.classList.remove('hide');
+    }
+}
+
+async function updateStartAndStopTimer(group_nr) {
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+    if (doc_snap.exists()) {
+        console.log(doc_snap.data());
+        let data = doc_snap.data();
+        document.getElementById('timer_grnr_span').innerText = group_nr;
+
+        let strt = document.getElementById('timer_start');
+        let stp = document.getElementById('timer_stop');
+        console.log(data.time_start);
+        if (data.time_start) {
+            let strt_date = data.time_start.toDate();
+            strt.childNodes[1].innerText = (strt_date.getHours() <= 9 ? '0' : '') + strt_date.getHours() + ':' + (strt_date.getMinutes() <= 9 ? '0' : '') + strt_date.getMinutes();
+            strt.classList.remove('hide');
+
+            swap_timer_edit(true, true);
+        } else {
+            strt.classList.add('hide');
+            swap_timer_edit(true, false);
+        }
+        if (data.time_stop) {
+            let stp_date = data.time_stop.toDate();
+            stp.childNodes[1].innerText = (stp_date.getHours() <= 9 ? '0' : '') + stp_date.getHours() + ':' + (stp_date.getMinutes() <= 9 ? '0' : '') + stp_date.getMinutes();
+            stp.classList.remove('hide');
+        } else {
+            stp.classList.add('hide');
+        }
     }
 }
 
