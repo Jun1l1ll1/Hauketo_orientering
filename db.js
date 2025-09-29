@@ -126,9 +126,6 @@ export async function verifyTCode(tcode) {
 }
 
 export async function findPost() {
-
-    console.log(auth.currentUser);
-
     const code = get_postcode();
     if (code == 'not_found') return;
 
@@ -150,8 +147,6 @@ export async function findPost() {
             return;
         }
     }
-
-    console.log(auth.currentUser);
 
     if (doc_snap.exists()) {
         return doc_snap.data();
@@ -388,7 +383,7 @@ export async function editMembers(group_nr, with_numset=false) {
         current_nr ++;
         if (to > 0 && current_nr > to) {
             console.warn('No available group number.')
-            return 0; //TODO Add note in HTML asking to change number set
+            return 0; //TODO? Add note in HTML asking to change number set
         }
         
         doc_snap = await getDoc( doc(coll_ref, current_nr.toString()) );
@@ -517,14 +512,14 @@ export async function timerGetGroup() {
 async function updateStartAndStopTimer(group_nr) {
     const doc_ref = doc(db, 'groups', group_nr);
     const doc_snap = await getDoc(doc_ref);
+
     if (doc_snap.exists()) {
-        console.log(doc_snap.data());
         let data = doc_snap.data();
         document.getElementById('timer_grnr_span').innerText = group_nr;
 
         let strt = document.getElementById('timer_start');
         let stp = document.getElementById('timer_stop');
-        console.log(data.time_start);
+
         if (data.time_start) {
             let strt_date = data.time_start.toDate();
             strt.childNodes[1].innerText = (strt_date.getHours() <= 9 ? '0' : '') + strt_date.getHours() + ':' + (strt_date.getMinutes() <= 9 ? '0' : '') + strt_date.getMinutes();
@@ -535,6 +530,7 @@ async function updateStartAndStopTimer(group_nr) {
             strt.classList.add('hide');
             swap_timer_edit(true, false);
         }
+
         if (data.time_stop) {
             let stp_date = data.time_stop.toDate();
             stp.childNodes[1].innerText = (stp_date.getHours() <= 9 ? '0' : '') + stp_date.getHours() + ':' + (stp_date.getMinutes() <= 9 ? '0' : '') + stp_date.getMinutes();
@@ -660,7 +656,6 @@ export async function setExportDataGroups() {
             t_min -= t_h*60;
             total_time = t_h + 't ' + t_min + 'min';
         }
-        console.log(start, stop, total_time)
 
         html += `
         <tr>
