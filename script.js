@@ -51,6 +51,10 @@ function cookie_admincode(acode) {
     add_cookie(1, 'admincode', acode.toUpperCase());
 }
 
+function cookie_timercode(acode) {
+    add_cookie(1, 'timercode', acode.toUpperCase());
+}
+
 
 
 
@@ -350,6 +354,19 @@ function confirm_admincode() {
     }
 }
 
+function confirm_timercode() {
+    if (get_cookie('timercode') != 'not_found') {
+        document.location.href = './timer.html';
+    }
+
+    let tcode = document.getElementById('timer_code_inp').value.toUpperCase();
+
+    if (tcode.length == 4 && tcode[0] == 'T') {
+        cookie_timercode(tcode);
+        document.location.href = './timer.html';
+    }
+}
+
 function enter_group() {
     let groupnr = document.getElementById('group_inp').value;
 
@@ -398,4 +415,21 @@ function update_slider_taskverifier(post_nr, post_status) {
     }
     
     document.getElementById("taskverifier_title").innerText = "Post " + post_nr + " - " + post_status;
+}
+
+
+function swap_timer_edit(set_manually = false, set_to_stop = true) {
+    if (set_manually) {
+        document.getElementById('timer_start_stop_switch').checked = set_to_stop;
+    }
+
+    let edit_stop = document.getElementById('timer_start_stop_switch').checked;
+
+    if (edit_stop) {
+        document.getElementById('timer_start_btn').classList.add('hide');
+        document.getElementById('timer_stop_btn').classList.remove('hide');
+    } else {
+        document.getElementById('timer_stop_btn').classList.add('hide');
+        document.getElementById('timer_start_btn').classList.remove('hide');
+    }
 }

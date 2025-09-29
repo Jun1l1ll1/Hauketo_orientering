@@ -8,10 +8,10 @@
 </head>
 <body>
     
-    <button class="leave_btn" onclick="exit('admincode')">Logg ut</button>
+    <button class="leave_btn" onclick="module.exitAdminView(true)">Logg ut</button>
 
     <div class="header">
-        <button class="back_btn" onclick="back('admin')">< Tilbake</button>
+        <button class="back_btn" onclick="module.exitAdminView()">< Tilbake</button>
     </div>
     
     <div class="center_vertical">
@@ -40,7 +40,8 @@
 </script>
 
 <script type="module">
-    import { verifyACode, getAllGroups, getAllPosts } from "./db.js";
+    import { verifyACode, updateAdminView, exitAdminView } from "./db.js";
+    module.exitAdminView = exitAdminView;
 
     const acode = get_cookie("admincode");
 
@@ -49,14 +50,7 @@
         exit("admincode");
     }
 
-    // if (get_edit_type() == 'groups') {
-        let all_groups = await getAllGroups();
-        let all_posts = await getAllPosts();
-        show_group_overview(all_groups, all_posts);
-
-    // } else {
-    //     let all_posts = await getAllPosts();
-    // }
+    await updateAdminView();
 
 </script>
 </html>

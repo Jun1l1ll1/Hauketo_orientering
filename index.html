@@ -46,7 +46,7 @@
     <label onclick="confirm_admincode()" for="admin_btn" class="admin_btn">Admin</label>
     <input class="hide" id="admin_btn" type="checkbox"></input>
 
-    <label onclick="" for="timer_btn" class="timer_btn">Tidtager</label>
+    <label onclick="confirm_timercode()" for="timer_btn" class="timer_btn">Tidtager</label>
     <input class="hide" id="timer_btn" type="checkbox"></input>
     
     <button class="help_btn" onclick="toggle_help()">?</button>
@@ -74,7 +74,7 @@
                 <p>Tidtager-code</p>
                 <input class="big_inp" type="text" name="timer_code_inp" id="timer_code_inp" placeholder="TXXX" autocomplete="off">
             </div>
-            <button class="big_confirm_btn" onclick="">Bruk</button>
+            <button class="big_confirm_btn" onclick="confirm_timercode()">Bruk</button>
         </div>
         <label for="timer_btn" class="btn">Tilbake</label>
     </div>

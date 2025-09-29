@@ -8,7 +8,9 @@ import {
     setDoc, 
     collection, 
     getDocs, 
-    deleteDoc
+    deleteDoc,
+    deleteField,
+    onSnapshot
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 import { 
     getAuth, 
@@ -31,6 +33,7 @@ const db = getFirestore(app);
 const analytics = getAnalytics(app);
 let auth = getAuth(app);
 
+let unsub_groups, unsub_posts;
 
 export async function index_auth(from = 'params') {
 
@@ -102,18 +105,82 @@ async function authenticate(email, pword) {
 
 export async function verifyACode(acode) {
     try {
-        const doc_ref = doc(db, 'admin', acode);
+        const doc_ref = doc(db, 'codes', acode);
         const doc_snap = await getDoc(doc_ref);
+        
+        if (doc_snap.data().type != "admincode") return false;
         return doc_snap.exists();
     } catch (error) {
         return false;
     }
 }
 
+export async function verifyTCode(tcode) {
+    try {
+        const doc_ref = doc(db, 'codes', tcode);
+        const doc_snap = await getDoc(doc_ref);
+        
+        if (doc_snap.data().type != "timercode") return false;
+        return doc_snap.exists();
+    } catch (error) {
+        return false;
+    }
+}
+
+
+export async function updateAdminView() {
+    let all_groups = [];
+    let all_posts = [];
+
+    const coll_ref_groups = collection(db, "groups");
+    unsub_groups = onSnapshot(coll_ref_groups, (snapshot) => {
+        all_groups = [];
+        snapshot.forEach((doc) => {
+            let data = doc.data();
+
+            let visit = {};
+            for (const postnr of Object.keys(data.visited_posts)) {
+                visit[postnr] = data.visited_posts[postnr].status
+            }
+
+            all_groups.push({
+                nr: doc.id,
+                names: data.members,
+                grade: data.numberset,
+                visited: visit
+            });
+        });
+        all_groups.sort((a, b) => a.nr - b.nr);
+        show_group_overview(all_groups, all_posts);
+    });
+    
+    const coll_ref_posts = collection(db, "posts");
+    unsub_posts = onSnapshot(coll_ref_posts, (snapshot) => {
+        all_posts = [];
+        snapshot.forEach((doc) => {
+            all_posts.push({
+                code: doc.id,
+                nr: doc.data().post_nr
+            });
+        });
+        all_posts.sort((a, b) => a.nr - b.nr);
+        show_group_overview(all_groups, all_posts);
+    });
+}
+
+export function exitAdminView(full_exit = false) {
+    if (unsub_groups) unsub_groups();
+    if (unsub_posts) unsub_posts();
+
+    if (full_exit) {
+        exit('admincode');
+    } else {
+        back('admin');
+    }
+}
+
+
 export async function findPost() {
-
-    console.log(auth.currentUser);
-
     const code = get_postcode();
     if (code == 'not_found') return;
 
@@ -135,8 +202,6 @@ export async function findPost() {
             return;
         }
     }
-
-    console.log(auth.currentUser);
 
     if (doc_snap.exists()) {
         return doc_snap.data();
@@ -373,7 +438,7 @@ export async function editMembers(group_nr, with_numset=false) {
         current_nr ++;
         if (to > 0 && current_nr > to) {
             console.warn('No available group number.')
-            return 0; //TODO Add note in HTML asking to change number set
+            return 0; //TODO? Add note in HTML asking to change number set
         }
         
         doc_snap = await getDoc( doc(coll_ref, current_nr.toString()) );
@@ -409,6 +474,124 @@ export async function removeDoc(coll, document, update=false) {
         
             default:
                 break;
+        }
+    }
+}
+
+
+
+export async function timer(now) {
+    let group_nr = document.getElementById('timer_grnr_span').innerText;
+    if (group_nr == 'XXX') return;
+
+    let chckbx = document.getElementById('timer_start_stop_switch');
+    let edit_stop = chckbx.checked;
+
+    let date = new Date();
+    let time;
+    if (now) {
+        time = date;
+    } else {
+        let l = document.getElementById('timer_custom').value.split(':');
+        if (l.length != 2) return;
+        time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), l[0], l[1]);
+    }
+
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        let d = doc_snap.data();
+        if (edit_stop) {
+            if (d.time_stop) {
+                if (!confirm('Er du sikker på at du vil overskrive nåværende sluttid?')) return;
+            }
+            await updateDoc(doc_ref, {
+                time_stop: time
+            });
+        } else {
+            if (d.time_start) {
+                if (!confirm('Er du sikker på at du vil overskrive nåværende starttid?')) return;
+            }
+            await updateDoc(doc_ref, {
+                time_start: time
+            });
+        }
+    }
+    
+    if (!edit_stop) {
+        swap_timer_edit(true, true);
+    }
+
+    await updateStartAndStopTimer(group_nr)
+}
+
+export async function removeTime(time) {
+    if (!['start', 'stop'].includes(time)) return;
+    
+    let group_nr = document.getElementById('timer_grnr_span').innerText;
+    if (group_nr == 'XXX') return;
+
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        if (time == 'start') {
+            await updateDoc(doc_ref, {
+                time_start: deleteField()
+            });
+        } else {
+            await updateDoc(doc_ref, {
+                time_stop: deleteField()
+            });
+        }
+    }
+
+    await updateStartAndStopTimer(group_nr);
+}
+
+export async function timerGetGroup() {
+    let group_nr = document.getElementById('group_inp').value;
+    if (group_nr == '') return;
+
+    await updateStartAndStopTimer(group_nr);
+
+    for (const elem of document.getElementsByClassName('timer_hide_when_group')) {
+        elem.classList.add('hide');
+    }
+    for (const elem of document.getElementsByClassName('timer_show_when_group')) {
+        elem.classList.remove('hide');
+    }
+}
+
+async function updateStartAndStopTimer(group_nr) {
+    const doc_ref = doc(db, 'groups', group_nr);
+    const doc_snap = await getDoc(doc_ref);
+
+    if (doc_snap.exists()) {
+        let data = doc_snap.data();
+        document.getElementById('timer_grnr_span').innerText = group_nr;
+
+        let strt = document.getElementById('timer_start');
+        let stp = document.getElementById('timer_stop');
+
+        if (data.time_start) {
+            let strt_date = data.time_start.toDate();
+            strt.childNodes[1].innerText = (strt_date.getHours() <= 9 ? '0' : '') + strt_date.getHours() + ':' + (strt_date.getMinutes() <= 9 ? '0' : '') + strt_date.getMinutes();
+            strt.classList.remove('hide');
+
+            swap_timer_edit(true, true);
+        } else {
+            strt.classList.add('hide');
+            swap_timer_edit(true, false);
+        }
+
+        if (data.time_stop) {
+            let stp_date = data.time_stop.toDate();
+            stp.childNodes[1].innerText = (stp_date.getHours() <= 9 ? '0' : '') + stp_date.getHours() + ':' + (stp_date.getMinutes() <= 9 ? '0' : '') + stp_date.getMinutes();
+            stp.classList.remove('hide');
+        } else {
+            stp.classList.add('hide');
         }
     }
 }
@@ -484,10 +667,10 @@ export async function setExportDataGroups() {
     let html = `
     <tr>
         <th>Gruppe</th>
-        <th>Trinn</th>
+        <th>Klasse</th>
         <th>Starttid</th>
         <th>Sluttid</th>
-        <th>Total tid</th>
+        <th>Total tid m tillegg</th>
         <th>Ant. besvarte poster</th>
         <th>Rette</th>
         <th>Feil</th>
@@ -496,7 +679,7 @@ export async function setExportDataGroups() {
     const coll_ref = collection(db, 'groups');
     const query_snap = await getDocs(coll_ref);
 
-    let data, correct, wrong, grade;
+    let data, correct, wrong, start, stop, total_time;
     query_snap.forEach((doc) => {
         data = doc.data();
 
@@ -506,31 +689,36 @@ export async function setExportDataGroups() {
             else if (visited.status == 'feil') wrong++;
         }
 
-        switch (data.numberset) {
-            case '8. klasse':
-                grade = '8';
-                break;
+        start = 'Aldri';
+        if (data.time_start) {
+            let strt_d = data.time_start.toDate();
+            start = strt_d;
+        }
 
-            case '9. klasse':
-                grade = '9';
-                break;
-                
-            case '10. klasse':
-                grade = '10';
-                break;
-        
-            default:
-                grade = '';
-                break;
+        stop = 'Aldri';
+        if (data.time_stop) {
+            let stp_d = data.time_stop.toDate();
+            stop = stp_d;
+        }
+
+        total_time = '';
+        if (data.time_start && data.time_stop) {
+            let t_sec = data.time_stop.seconds - data.time_start.seconds;
+            t_sec += 3*60 * wrong; // 3 min tillegg per feil
+
+            let t_min = Math.floor(t_sec/60);
+            let t_h = Math.floor(t_min/60);
+            t_min -= t_h*60;
+            total_time = t_h + 't ' + t_min + 'min';
         }
 
         html += `
         <tr>
             <td>${doc.id}</td>
-            <td>${grade}</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td>${data.numberset != 'Ekstra' ? data.numberset : ''}</td>
+            <td>${start}</td>
+            <td>${stop}</td>
+            <td>${total_time}</td>
             <td>${correct+wrong}</td>
             <td>${correct}</td>
             <td>${wrong}</td>
