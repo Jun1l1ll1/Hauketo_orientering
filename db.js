@@ -616,10 +616,10 @@ export async function setExportDataGroups() {
     let html = `
     <tr>
         <th>Gruppe</th>
-        <th>Trinn</th>
+        <th>Klasse</th>
         <th>Starttid</th>
         <th>Sluttid</th>
-        <th>Total tid</th>
+        <th>Total tid m tillegg</th>
         <th>Ant. besvarte poster</th>
         <th>Rette</th>
         <th>Feil</th>
@@ -628,7 +628,7 @@ export async function setExportDataGroups() {
     const coll_ref = collection(db, 'groups');
     const query_snap = await getDocs(coll_ref);
 
-    let data, correct, wrong, grade;
+    let data, correct, wrong, start, stop, total_time;
     query_snap.forEach((doc) => {
         data = doc.data();
 
@@ -638,31 +638,37 @@ export async function setExportDataGroups() {
             else if (visited.status == 'feil') wrong++;
         }
 
-        switch (data.numberset) {
-            case '8. klasse':
-                grade = '8';
-                break;
-
-            case '9. klasse':
-                grade = '9';
-                break;
-                
-            case '10. klasse':
-                grade = '10';
-                break;
-        
-            default:
-                grade = '';
-                break;
+        start = 'Aldri';
+        if (data.time_start) {
+            let strt_d = data.time_start.toDate();
+            start = strt_d;
         }
+
+        stop = 'Aldri';
+        if (data.time_stop) {
+            let stp_d = data.time_stop.toDate();
+            stop = stp_d;
+        }
+
+        total_time = '';
+        if (data.time_start && data.time_stop) {
+            let t_sec = data.time_stop.seconds - data.time_start.seconds;
+            t_sec += 3*60 * wrong; // 3 min tillegg per feil
+
+            let t_min = Math.floor(t_sec/60);
+            let t_h = Math.floor(t_min/60);
+            t_min -= t_h*60;
+            total_time = t_h + 't ' + t_min + 'min';
+        }
+        console.log(start, stop, total_time)
 
         html += `
         <tr>
             <td>${doc.id}</td>
-            <td>${grade}</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td>${data.numberset != 'Ekstra' ? data.numberset : ''}</td>
+            <td>${start}</td>
+            <td>${stop}</td>
+            <td>${total_time}</td>
             <td>${correct+wrong}</td>
             <td>${correct}</td>
             <td>${wrong}</td>
