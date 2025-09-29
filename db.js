@@ -9,7 +9,8 @@ import {
     collection, 
     getDocs, 
     deleteDoc,
-    deleteField
+    deleteField,
+    onSnapshot
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 import { 
     getAuth, 
@@ -32,6 +33,7 @@ const db = getFirestore(app);
 const analytics = getAnalytics(app);
 let auth = getAuth(app);
 
+let unsub_groups, unsub_posts;
 
 export async function index_auth(from = 'params') {
 
@@ -124,6 +126,59 @@ export async function verifyTCode(tcode) {
         return false;
     }
 }
+
+
+export async function updateAdminView() {
+    let all_groups = [];
+    let all_posts = [];
+
+    const coll_ref_groups = collection(db, "groups");
+    unsub_groups = onSnapshot(coll_ref_groups, (snapshot) => {
+        all_groups = [];
+        snapshot.forEach((doc) => {
+            let data = doc.data();
+
+            let visit = {};
+            for (const postnr of Object.keys(data.visited_posts)) {
+                visit[postnr] = data.visited_posts[postnr].status
+            }
+
+            all_groups.push({
+                nr: doc.id,
+                names: data.members,
+                grade: data.numberset,
+                visited: visit
+            });
+        });
+        all_groups.sort((a, b) => a.nr - b.nr);
+        show_group_overview(all_groups, all_posts);
+    });
+    
+    const coll_ref_posts = collection(db, "posts");
+    unsub_posts = onSnapshot(coll_ref_posts, (snapshot) => {
+        all_posts = [];
+        snapshot.forEach((doc) => {
+            all_posts.push({
+                code: doc.id,
+                nr: doc.data().post_nr
+            });
+        });
+        all_posts.sort((a, b) => a.nr - b.nr);
+        show_group_overview(all_groups, all_posts);
+    });
+}
+
+export function exitAdminView(full_exit = false) {
+    if (unsub_groups) unsub_groups();
+    if (unsub_posts) unsub_posts();
+
+    if (full_exit) {
+        exit('admincode');
+    } else {
+        back('admin');
+    }
+}
+
 
 export async function findPost() {
     const code = get_postcode();
