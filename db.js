@@ -269,9 +269,6 @@ export async function updateTaskverifier() {
     await updateDoc(group_ref, {
         visited_posts: updated_posts
     });
-
-    // document.getElementById('taskverifier_title').innerText = 'Post ' + post_data.post_nr + ' - ' + post_status;
-    
 }
 
 export async function updateMemberAttendance() {
