@@ -51,12 +51,16 @@
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
-    document.getElementById("download_result_groups").addEventListener('click', function() {
+    const module = {};
+
+    document.getElementById("download_result_groups").addEventListener('click', async function() {
+        await module.setExportDataGroups();
         var wb = XLSX.utils.table_to_book(document.getElementById("result_group_export_table"));
         XLSX.writeFile(wb, "Orientering - Resulatater Gruppe.xlsx");
     });
 
-    document.getElementById("download_result_individual").addEventListener('click', function() {
+    document.getElementById("download_result_individual").addEventListener('click', async function() {
+        await module.setExportDataIndividual();
         var wb = XLSX.utils.table_to_book(document.getElementById("result_individual_export_table"));
         XLSX.writeFile(wb, "Orientering - Resulatater Individ.xlsx");
     });
@@ -64,6 +68,8 @@
 
 <script type="module">
     import { verifyACode, setExportDataGroups, setExportDataIndividual } from "./db.js";
+    module.setExportDataGroups = setExportDataGroups;
+    module.setExportDataIndividual = setExportDataIndividual;
 
     const acode = get_cookie("admincode");
 
@@ -72,7 +78,7 @@
         exit("admincode");
     }
 
-    setExportDataGroups();
-    setExportDataIndividual();
+    // setExportDataGroups();
+    // setExportDataIndividual();
 </script>
 </html>
