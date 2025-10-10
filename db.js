@@ -569,6 +569,7 @@ async function updateStartAndStopTimer(group_nr) {
     if (doc_snap.exists()) {
         let data = doc_snap.data();
         document.getElementById('timer_grnr_span').innerText = group_nr;
+        document.getElementById('timer_group_members').innerText = `(${data.members.join(', ')})`;
 
         let strt = document.getElementById('timer_start');
         let stp = document.getElementById('timer_stop');
