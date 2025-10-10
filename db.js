@@ -667,7 +667,7 @@ export async function setExportDataGroups() {
         <th>Klasse</th>
         <th>Starttid</th>
         <th>Sluttid</th>
-        <th>Total tid m tillegg</th>
+        <th>Tot. tid m tillegg (min)</th>
         <th>Ant. besvarte poster</th>
         <th>Rette</th>
         <th>Feil</th>
@@ -689,24 +689,23 @@ export async function setExportDataGroups() {
         start = 'Aldri';
         if (data.time_start) {
             let strt_d = data.time_start.toDate();
-            start = strt_d;
+            start = 'kl. ' + (strt_d.getHours() <= 9 ? '0' : '') + strt_d.getHours() + ':' + (strt_d.getMinutes() <= 9 ? '0' : '') + strt_d.getMinutes();
         }
 
         stop = 'Aldri';
         if (data.time_stop) {
             let stp_d = data.time_stop.toDate();
-            stop = stp_d;
+            stop = 'kl. ' + (stp_d.getHours() <= 9 ? '0' : '') + stp_d.getHours() + ':' + (stp_d.getMinutes() <= 9 ? '0' : '') + stp_d.getMinutes();
         }
 
         total_time = '';
         if (data.time_start && data.time_stop) {
-            let t_sec = data.time_stop.seconds - data.time_start.seconds;
-            t_sec += 3*60 * wrong; // 3 min tillegg per feil
+            let min_per_wrong = parseInt( document.getElementById('result_time_penalty_inp').value );
 
-            let t_min = Math.floor(t_sec/60);
-            let t_h = Math.floor(t_min/60);
-            t_min -= t_h*60;
-            total_time = t_h + 't ' + t_min + 'min';
+            let t_sec = data.time_stop.seconds - data.time_start.seconds;
+            t_sec += min_per_wrong*60 * wrong; // min_per_wrong minutter tillegg per feil
+
+            total_time = Math.floor(t_sec/60);
         }
 
         html += `

@@ -366,6 +366,10 @@ p:has(~.big_inp) {
     }
 }
 
+#result_time_penalty_inp {
+    width: 2rem;
+}
+
 .edit_btn {
     display: inline-block;
     color: var(--text_color);
