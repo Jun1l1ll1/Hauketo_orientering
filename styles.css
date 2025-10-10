@@ -80,6 +80,9 @@ h1, h2, h3, h4, h5, p {
     background-color: var(--yellow_light);
     color: var(--yellow_dark);
 }
+.ct_yellow {
+    color: var(--yellow_light);
+}
 
 .c_cancel {
     background-color: var(--cancel_light);
@@ -364,6 +367,10 @@ p:has(~.big_inp) {
         --width: 100%;
         margin-bottom: 20px;
     }
+}
+
+#result_time_penalty_inp {
+    width: 2rem;
 }
 
 .edit_btn {

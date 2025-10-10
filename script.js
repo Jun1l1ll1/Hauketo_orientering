@@ -293,7 +293,7 @@ function show_group_overview(groups, posts) {
     for (const post of posts) {
         html += `<th>Post ${post.nr}</th>`;
     }
-    html += '</tr>';
+    html += '<th></th> </tr>';
     
     for (const g of groups) {
         html += `
@@ -307,7 +307,9 @@ function show_group_overview(groups, posts) {
                 : 'var(--inp_color);'
             };"></td>`;
         }
-        html += '</tr>';
+        html += `
+            <td><span class="${(g.time[1] ? 'ct_check">I mål' : g.time[0] ? 'ct_yellow">I løypa' : 'ct_obscure">Ikke startet')}</span></td>
+        </tr>`;
     }
     
     document.getElementById('overview_table').innerHTML = html;
