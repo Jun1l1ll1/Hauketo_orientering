@@ -147,7 +147,8 @@ export async function updateAdminView() {
                 nr: doc.id,
                 names: data.members,
                 grade: data.numberset,
-                visited: visit
+                visited: visit,
+                time: [(data.time_start ? true : false), (data.time_stop ? true : false)]
             });
         });
         all_groups.sort((a, b) => a.nr - b.nr);
