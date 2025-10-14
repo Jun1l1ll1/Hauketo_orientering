@@ -707,7 +707,7 @@ export async function setExportDataGroups() {
             let t_sec = data.time_stop.seconds - data.time_start.seconds;
             t_sec += min_per_wrong*60 * wrong; // min_per_wrong minutter tillegg per feil
 
-            total_time = Math.floor(t_sec/60);
+            total_time = Math.ceil(t_sec/60);
         }
 
         html += `
