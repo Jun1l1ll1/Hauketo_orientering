@@ -201,8 +201,6 @@ function close_edit_numset() {
 
 
 function open_edit_group_members(numsets, group_nr='', members=null, numset_key='') {
-    document.getElementById('new_post_or_group_btn').classList.add('hide');
-
     let overlay = document.getElementById('add_post_cont_overlay');
     let cont = document.getElementById('add_post_cont');
 
@@ -303,8 +301,6 @@ function close_edit_group_members() {
         overlay.classList.add('hide');
     }
     cont.innerHTML = '';
-
-    document.getElementById('new_post_or_group_btn').classList.remove('hide');
 }
 
 function show_all_groups(groups) {
