@@ -83,6 +83,11 @@ dialog {
         > button {
             font-weight: bold;
             padding: 5px 10px;
+
+            &.highlight {
+                background-color: var(--check_light);
+                color: var(--check_dark);
+            }
         }
     }
 }

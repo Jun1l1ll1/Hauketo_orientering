@@ -102,7 +102,7 @@ function toggle_help() {
 
 
 
-function notice_dialog(message, buttons = {"OK": true}, close_on_click_outside = false) {
+function notice_dialog(message, buttons = {"OK": true}, highlighted = ["OK"], close_on_click_outside = false) {
     let dialog = document.getElementById('notice_dialog');
     let dialog_text = document.getElementById('notice_dialog_text');
     let dialog_buttons_cont = document.getElementById('notice_dialog_buttons');
@@ -133,6 +133,9 @@ function notice_dialog(message, buttons = {"OK": true}, close_on_click_outside =
         for (const [button_text, value] of Object.entries(buttons)) {
             const button = document.createElement('button');
             button.innerText = button_text;
+            if (highlighted.includes(button_text)) {
+                button.classList.add('highlight');
+            }
             button.addEventListener('click', () => finish(value));
             dialog_buttons_cont.appendChild(button);
         }
@@ -245,7 +248,7 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
         </ul>
 
         <button onclick="module.editMembers('${group_nr}', ${group_nr == ''})" class="f_bold c_check small">Godkjenn</button>
-        <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
+        <button onclick="close_edit_group_members()" class="cancel_btn small">Avbryt</button>
     `;
     cont.innerHTML = html;
 
@@ -270,14 +273,20 @@ async function members_inps_to_array() {
         if (name == '') continue;
 
         if (name.includes(",")) {
-            const split_names = await notice_dialog("Navnet '" + name + "' inneholder komma.\nØnsker du å dele det inn i flere medlemmer?", {"Ja, del opp!": true, "Nei (behold slik)": false, "Avbryt": null}, false);
-            if (split_names == null) {
-                return []; // Cancel
-            } else if (split_names) {
+            const split_names = await notice_dialog(
+                "Navn kan ikke inneholde komma.\nØnsker du å dele '" + name + "' inn i flere medlemmer?",
+                {"Ja, del opp!": true, "Avbryt": false},
+                ["Ja, del opp!"],
+                true
+            );
+            
+            if (split_names) {
                 name.split(",").forEach(n => {
                     if (n.trim() != '') members.push(n.trim());
                 });
                 continue;
+            } else {
+                return [];
             }
         }
 
