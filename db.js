@@ -382,7 +382,7 @@ export async function openEditGroup(group_nr='', members=null, numset_key='') {
 }
 
 export async function editMembers(group_nr, with_numset=false) {
-    const names_list = members_inps_to_array();
+    const names_list = await members_inps_to_array();
     if (names_list.length == 0) { return 0 }
 
     let names_arr = [];
@@ -502,14 +502,22 @@ export async function timer(now) {
         let d = doc_snap.data();
         if (edit_stop) {
             if (d.time_stop) {
-                if (!confirm('Er du sikker på at du vil overskrive nåværende sluttid?')) return;
+                const overwrite = await notice_dialog(
+                    'Er du sikker på at du vil overskrive nåværende sluttid?',
+                    {'Ja': true, 'Nei': false}
+                );
+                if (!overwrite) return;
             }
             await updateDoc(doc_ref, {
                 time_stop: time
             });
         } else {
             if (d.time_start) {
-                if (!confirm('Er du sikker på at du vil overskrive nåværende starttid?')) return;
+                const overwrite = await notice_dialog(
+                    'Er du sikker på at du vil overskrive nåværende starttid?',
+                    {'Ja': true, 'Nei': false}
+                );
+                if (!overwrite) return;
             }
             await updateDoc(doc_ref, {
                 time_start: time

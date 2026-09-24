@@ -102,6 +102,49 @@ function toggle_help() {
 
 
 
+function notice_dialog(message, buttons = {"OK": true}, close_on_click_outside = false) {
+    let dialog = document.getElementById('notice_dialog');
+    let dialog_text = document.getElementById('notice_dialog_text');
+    let dialog_buttons_cont = document.getElementById('notice_dialog_buttons');
+
+    return new Promise(resolve => {
+        let settled = false;
+
+        function finish(value) {
+            if (settled) return;
+            settled = true;
+            dialog.removeEventListener('cancel', cancel_handler);
+            dialog.removeEventListener('click', outside_click_handler);
+            if (dialog.open) dialog.close();
+            resolve(value);
+        }
+
+        function cancel_handler() {
+            finish(false);
+        }
+
+        function outside_click_handler(event) {
+            if (event.target === dialog) finish(false);
+        }
+
+        dialog_text.innerText = message;
+        dialog_buttons_cont.innerHTML = '';
+
+        for (const [button_text, value] of Object.entries(buttons)) {
+            const button = document.createElement('button');
+            button.innerText = button_text;
+            button.addEventListener('click', () => finish(value));
+            dialog_buttons_cont.appendChild(button);
+        }
+
+        dialog.addEventListener('cancel', cancel_handler);
+        if (close_on_click_outside) dialog.addEventListener('click', outside_click_handler);
+        if (!dialog.open) dialog.showModal();
+    });
+}
+
+
+
 
 function show_numsets(numsets) {
     let html = '';
@@ -210,8 +253,8 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
         cont.classList.remove('hide');
     }
 }
-function add_new_group_member(module, group_nr) {
-    let members = members_inps_to_array();
+async function add_new_group_member(module, group_nr) {
+    let members = await members_inps_to_array();
     let new_members = members.length == 0 ? '' : members.join(',') + ',';
 
     let numset_key = '';
@@ -220,11 +263,23 @@ function add_new_group_member(module, group_nr) {
     module.openEditGroup(group_nr, new_members, numset_key);
 }
 
-function members_inps_to_array() {
+async function members_inps_to_array() {
     let members = [];
     for (const li of document.getElementsByClassName('edit_group_member_li')) {
         let name = li.getElementsByClassName('edit_member_name_inp')[0].value;
         if (name == '') continue;
+
+        if (name.includes(",")) {
+            const split_names = await notice_dialog("Navnet '" + name + "' inneholder komma.\nØnsker du å dele det inn i flere medlemmer?", {"Ja, del opp!": true, "Nei (behold slik)": false, "Avbryt": null}, false);
+            if (split_names == null) {
+                return []; // Cancel
+            } else if (split_names) {
+                name.split(",").forEach(n => {
+                    if (n.trim() != '') members.push(n.trim());
+                });
+                continue;
+            }
+        }
 
         members.push(name);
     }
