@@ -207,15 +207,15 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
     let html = `<h4 class="edit_group_title">${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4>`
 
     if (group_nr == '') {
+        const numset_to_use = numset_key != '' ? numset_key : localStorage.getItem("last_used_numset");
         html += `
             <div class="edit_group_choose_numset_cont">
                 <p>Velg nummersett:</p>
-                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select">`
-        ;
+                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select" onchange="localStorage.setItem('last_used_numset', this.value)">`;
         
         let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
         for (const numset of keys_sorted) {
-            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
+            html += `<option ${numset_to_use == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
         }
 
         html += `</select>
