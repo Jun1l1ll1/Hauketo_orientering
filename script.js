@@ -201,9 +201,9 @@ function close_edit_numset() {
 
 
 function open_edit_group_members(numsets, group_nr='', members=null, numset_key='') {
-    document.getElementById('numset_cont').classList.add('hide');
     document.getElementById('new_post_or_group_btn').classList.add('hide');
 
+    let overlay = document.getElementById('add_post_cont_overlay');
     let cont = document.getElementById('add_post_cont');
 
     let html = `<h4 class="edit_group_title">${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4>`
@@ -252,8 +252,8 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
     `;
     cont.innerHTML = html;
 
-    if (cont.classList.contains('hide')) {
-        cont.classList.remove('hide');
+    if (overlay.classList.contains('hide')) {
+        overlay.classList.remove('hide');
     }
 }
 async function add_new_group_member(module, group_nr) {
@@ -279,7 +279,7 @@ async function members_inps_to_array() {
                 ["Ja, del opp!"],
                 true
             );
-            
+
             if (split_names) {
                 name.split(",").forEach(n => {
                     if (n.trim() != '') members.push(n.trim());
@@ -296,14 +296,14 @@ async function members_inps_to_array() {
 }
 
 function close_edit_group_members() {
+    let overlay = document.getElementById('add_post_cont_overlay');
     let cont = document.getElementById('add_post_cont');
 
-    if (!cont.classList.contains('hide')) {
-        cont.classList.add('hide');
+    if (!overlay.classList.contains('hide')) {
+        overlay.classList.add('hide');
     }
     cont.innerHTML = '';
 
-    document.getElementById('numset_cont').classList.remove('hide');
     document.getElementById('new_post_or_group_btn').classList.remove('hide');
 }
 

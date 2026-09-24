@@ -155,12 +155,15 @@ dialog {
 }
 
 .overlay {
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     width: 100vw;
     height: 100vh;
     background-color: rgba(0,0,0,.75);
+}
+
+.popup_cont {
     > div {
         background-color: var(--bg_color);
         max-width: 80vw;
@@ -438,6 +441,8 @@ p:has(~.big_inp) {
 }
 
 .add_post_cont {
+    background-color: var(--bg_color);
+    
     > input {
         font-size: 1rem;
         width: calc(100% - 20px);

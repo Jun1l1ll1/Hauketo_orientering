@@ -53,7 +53,7 @@
     <!--SLUTT Extra knapper -->
 
     <!--START Admin overlay -->
-    <div class="overlay center" id="admin_overlay">
+    <div class="overlay center popup_cont" id="admin_overlay">
         <div class="center">
             <div>
                 <p>Adminkode</p>
@@ -66,20 +66,21 @@
     <!--SLUTT Admin overlay -->
 
     <!--START Timer overlay -->
-    <div class="overlay center" id="timer_overlay">
+    <div class="overlay center popup_cont" id="timer_overlay">
         <div class="center">
             <div>
                 <p>Tidtager-code</p>
                 <input class="big_inp" type="text" name="timer_code_inp" id="timer_code_inp" placeholder="TXXX" autocomplete="off">
             </div>
-            <button class="big_confirm_btn" onclick="confirm_timercode()">Bruk</button>
+                <button class="big_confirm_btn" onclick="confirm_timercode()">Bruk</button>
+            </div>
+            <label for="timer_btn" class="btn">Tilbake</label>
         </div>
-        <label for="timer_btn" class="btn">Tilbake</label>
     </div>
     <!--SLUTT Timer overlay -->
 
     <!--START Hjelp overlay -->
-    <div class="overlay center" id="help_overlay">
+    <div class="overlay center popup_cont" id="help_overlay">
         <div>
             <p>Postkode er 4-siffret kode utgitt av eventets administratorer.</p>
             <br/><p>Kontakt en av administratorene ved spørsmål eller rapportering av feil.</p>

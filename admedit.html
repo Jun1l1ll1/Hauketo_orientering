@@ -18,6 +18,12 @@
             <!-- Buttons are added here in show_notice_dialog() -->
         </div>
     </dialog>
+
+    <div class="overlay center hide" id="add_post_cont_overlay">
+        <div id="add_post_cont" class="container add_post_cont">
+            <!-- Added when user clicks new_post_or_group_btn using open_edit_group_members() -->
+        </div>
+    </div>
     
     <div class="center_vertical">
         <div class="admin_cont">
@@ -39,10 +45,6 @@
             </div>
 
             <button id="new_post_or_group_btn" class="f_bold c_check">Legg til ny</button>
-
-            <div id="add_post_cont" class="container add_post_cont hide">
-                <!-- Added when user clicks new_post_or_group_btn using open_edit_group_members() -->
-            </div>
 
             <div class="container">
                 <h4 id="edit_existing_title"></h4>
