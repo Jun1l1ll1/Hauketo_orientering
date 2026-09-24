@@ -102,6 +102,52 @@ function toggle_help() {
 
 
 
+function notice_dialog(message, buttons = {"OK": true}, highlighted = ["OK"], close_on_click_outside = false) {
+    let dialog = document.getElementById('notice_dialog');
+    let dialog_text = document.getElementById('notice_dialog_text');
+    let dialog_buttons_cont = document.getElementById('notice_dialog_buttons');
+
+    return new Promise(resolve => {
+        let settled = false;
+
+        function finish(value) {
+            if (settled) return;
+            settled = true;
+            dialog.removeEventListener('cancel', cancel_handler);
+            dialog.removeEventListener('click', outside_click_handler);
+            if (dialog.open) dialog.close();
+            resolve(value);
+        }
+
+        function cancel_handler() {
+            finish(false);
+        }
+
+        function outside_click_handler(event) {
+            if (event.target === dialog) finish(false);
+        }
+
+        dialog_text.innerText = message;
+        dialog_buttons_cont.innerHTML = '';
+
+        for (const [button_text, value] of Object.entries(buttons)) {
+            const button = document.createElement('button');
+            button.innerText = button_text;
+            if (highlighted.includes(button_text)) {
+                button.classList.add('highlight');
+            }
+            button.addEventListener('click', () => finish(value));
+            dialog_buttons_cont.appendChild(button);
+        }
+
+        dialog.addEventListener('cancel', cancel_handler);
+        if (close_on_click_outside) dialog.addEventListener('click', outside_click_handler);
+        if (!dialog.open) dialog.showModal();
+    });
+}
+
+
+
 
 function show_numsets(numsets) {
     let html = '';
@@ -155,23 +201,21 @@ function close_edit_numset() {
 
 
 function open_edit_group_members(numsets, group_nr='', members=null, numset_key='') {
-    document.getElementById('numset_cont').classList.add('hide');
-    document.getElementById('new_post_or_group_btn').classList.add('hide');
-
+    let overlay = document.getElementById('add_post_cont_overlay');
     let cont = document.getElementById('add_post_cont');
 
     let html = `<h4 class="edit_group_title">${group_nr == '' ? 'Legg til ny' : 'Rediger gruppe ' + group_nr}</h4>`
 
     if (group_nr == '') {
+        const numset_to_use = numset_key != '' ? numset_key : localStorage.getItem("last_used_numset");
         html += `
             <div class="edit_group_choose_numset_cont">
                 <p>Velg nummersett:</p>
-                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select">`
-        ;
+                <select name="edit_group_choose_numset_select" id="edit_group_choose_numset_select" onchange="localStorage.setItem('last_used_numset', this.value)">`;
         
         let keys_sorted = Object.keys(numsets).sort((a, b) => numsets[a][0] - numsets[b][0])
         for (const numset of keys_sorted) {
-            html += `<option ${numset_key == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
+            html += `<option ${numset_to_use == numset ? 'selected' : ''} value="${numset}">${numset} (${numsets[numset][0]}-${numsets[numset][1] ? numsets[numset][1] : ''})</option>`
         }
 
         html += `</select>
@@ -202,16 +246,16 @@ function open_edit_group_members(numsets, group_nr='', members=null, numset_key=
         </ul>
 
         <button onclick="module.editMembers('${group_nr}', ${group_nr == ''})" class="f_bold c_check small">Godkjenn</button>
-        <button onclick="close_edit_group_members()" class="cancel_btn small">Cancel</button>
+        <button onclick="close_edit_group_members()" class="cancel_btn small">Avbryt</button>
     `;
     cont.innerHTML = html;
 
-    if (cont.classList.contains('hide')) {
-        cont.classList.remove('hide');
+    if (overlay.classList.contains('hide')) {
+        overlay.classList.remove('hide');
     }
 }
-function add_new_group_member(module, group_nr) {
-    let members = members_inps_to_array();
+async function add_new_group_member(module, group_nr) {
+    let members = await members_inps_to_array();
     let new_members = members.length == 0 ? '' : members.join(',') + ',';
 
     let numset_key = '';
@@ -220,11 +264,29 @@ function add_new_group_member(module, group_nr) {
     module.openEditGroup(group_nr, new_members, numset_key);
 }
 
-function members_inps_to_array() {
+async function members_inps_to_array() {
     let members = [];
     for (const li of document.getElementsByClassName('edit_group_member_li')) {
         let name = li.getElementsByClassName('edit_member_name_inp')[0].value;
         if (name == '') continue;
+
+        if (name.includes(",")) {
+            const split_names = await notice_dialog(
+                "Navn kan ikke inneholde komma.\nØnsker du å dele '" + name + "' inn i flere medlemmer?",
+                {"Ja, del opp!": true, "Avbryt": false},
+                ["Ja, del opp!"],
+                true
+            );
+
+            if (split_names) {
+                name.split(",").forEach(n => {
+                    if (n.trim() != '') members.push(n.trim());
+                });
+                continue;
+            } else {
+                return [];
+            }
+        }
 
         members.push(name);
     }
@@ -232,15 +294,13 @@ function members_inps_to_array() {
 }
 
 function close_edit_group_members() {
+    let overlay = document.getElementById('add_post_cont_overlay');
     let cont = document.getElementById('add_post_cont');
 
-    if (!cont.classList.contains('hide')) {
-        cont.classList.add('hide');
+    if (!overlay.classList.contains('hide')) {
+        overlay.classList.add('hide');
     }
     cont.innerHTML = '';
-
-    document.getElementById('numset_cont').classList.remove('hide');
-    document.getElementById('new_post_or_group_btn').classList.remove('hide');
 }
 
 function show_all_groups(groups) {
